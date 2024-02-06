@@ -19,11 +19,7 @@ void main() {
         title: 'Xgenria AI',
         routerConfig: xRouter(),
         debugShowCheckedModeBanner: false,
-        themeAnimationCurve: Curves.easeInOutCubic,
-        themeAnimationDuration: const Duration(milliseconds: 300),
         theme: XgenriaTheme.dark,
-        darkTheme: XgenriaTheme.dark,
-        themeMode: ThemeMode.dark,
       ),
     )),
   );
