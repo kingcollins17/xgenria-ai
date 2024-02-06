@@ -1,10 +1,9 @@
 import 'package:redux/redux.dart';
-import 'package:xgenria/api/auth.dart';
-import 'package:xgenria/redux/actions/auth_action.dart';
-import 'package:xgenria/redux/states/base.dart';
-import 'package:xgenria/redux/notification/state_notification.dart';
-import 'package:xgenria/redux/states/auth/auth_reducer.dart';
-import 'package:xgenria/redux/states/auth/payloads.dart';
+import '../../api/auth.dart';
+import '../actions/auth_action.dart';
+import '../states/base.dart';
+import '../notification/state_notification.dart';
+import '../states/auth/payloads.dart';
 
 dynamic authMiddleware(Store store, action, NextDispatcher next) {
   //if action is of type [AuthStateAction]

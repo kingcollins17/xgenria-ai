@@ -1,7 +1,7 @@
-import 'package:xgenria/redux/actions/auth_action.dart';
-import 'package:xgenria/redux/actions/base.dart';
-import 'package:xgenria/redux/states/auth/auth_state.dart';
-import 'package:xgenria/redux/states/auth/payloads.dart';
+import '../../actions/auth_action.dart';
+import '../../actions/base.dart';
+import 'auth_state.dart';
+import 'payloads.dart';
 
 AuthState authReducer(AuthState state, XgenriaStateAction action) {
   if (action is AuthStateAction) {

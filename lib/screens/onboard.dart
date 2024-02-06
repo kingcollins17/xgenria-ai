@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:xgenria/settings.dart';
 
 class XOnboard extends StatefulWidget {
   const XOnboard({super.key});

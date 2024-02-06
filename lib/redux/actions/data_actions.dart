@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:xgenria/api/dash_board.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/redux/actions/base.dart';
+import '../../api/dash_board.dart';
+import '../../models/access_token.dart';
+import 'base.dart';
 
 enum DataActionType {
   load,

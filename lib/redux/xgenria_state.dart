@@ -1,7 +1,7 @@
-import 'package:xgenria/redux/actions/base.dart';
-import 'package:xgenria/redux/states/auth/auth_reducer.dart';
-import 'package:xgenria/redux/states/auth/auth_state.dart';
-import 'package:xgenria/redux/states/data/data_state.dart';
+import 'actions/base.dart';
+import 'states/auth/auth_reducer.dart';
+import 'states/auth/auth_state.dart';
+import 'states/data/data_state.dart';
 
 class XgenriaState {
   final AuthState authState;

@@ -4,15 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 // import 'package:flutter_riverpod/flutter_riverppod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/providers/dio_provider.dart';
-import 'package:xgenria/redux/actions/auth_action.dart';
 import 'package:xgenria/redux/actions/data_actions.dart';
-import 'package:xgenria/redux/states/auth/auth_state.dart';
 import 'package:xgenria/redux/states/data/data_state.dart';
 import 'package:xgenria/redux/xgenria_state.dart';
 

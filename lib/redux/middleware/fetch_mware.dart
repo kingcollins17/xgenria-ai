@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
 
 import 'package:redux/redux.dart';
-import 'package:xgenria/api/dash_board.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/redux/actions/data_actions.dart';
-import 'package:dio/dio.dart';
+import '../../api/dash_board.dart';
+import '../actions/data_actions.dart';
 
 dynamic fetchDashboardMW(Store store, action, NextDispatcher next) {
   if (action is DataStateAction) {

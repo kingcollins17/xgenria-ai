@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/models/project.dart';
+import '../models/access_token.dart';
+import '../models/project.dart';
 
 import '_config.dart' as cfg;
 

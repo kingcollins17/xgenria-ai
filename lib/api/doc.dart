@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/models/doc.dart';
+import '../models/access_token.dart';
+import '../models/doc.dart';
 import '_config.dart' as cfg;
 
 abstract class DocumentAPI {

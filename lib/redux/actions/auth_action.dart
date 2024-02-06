@@ -1,4 +1,4 @@
-import 'package:xgenria/redux/actions/base.dart';
+import 'base.dart';
 
 enum AuthActionType {
   ///login action requires LoginPayload as payload

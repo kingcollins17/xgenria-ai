@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/models/dashboard.dart';
-import 'package:xgenria/models/template.dart';
+import '../models/access_token.dart';
+import '../models/dashboard.dart';
+import '../models/template.dart';
 
 import '_config.dart' as cfg;
 

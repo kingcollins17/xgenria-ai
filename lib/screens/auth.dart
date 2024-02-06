@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unused_element, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -7,15 +6,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
-import 'package:xgenria/providers/dio_provider.dart';
-import 'package:xgenria/redux/actions/auth_action.dart';
-import 'package:xgenria/redux/actions/base.dart';
-import 'package:xgenria/redux/actions/data_actions.dart';
-import 'package:xgenria/redux/states/auth/auth_state.dart';
-import 'package:xgenria/redux/states/auth/payloads.dart';
-import 'package:xgenria/redux/xgenria_state.dart';
+import '../providers/dio_provider.dart';
+import '../redux/actions/auth_action.dart';
+import '../redux/actions/base.dart';
+import '../redux/actions/data_actions.dart';
+import '../redux/states/auth/auth_state.dart';
+import '../redux/states/auth/payloads.dart';
+import '../redux/xgenria_state.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:xgenria/widgets/pop_up.dart';
+import '../widgets/pop_up.dart';
 
 class XAuth extends ConsumerStatefulWidget {
   const XAuth({super.key});

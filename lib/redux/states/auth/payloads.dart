@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/redux/notification/state_notification.dart';
+import '../../../models/access_token.dart';
+import '../../notification/state_notification.dart';
 
 //
 class LoginPayload {

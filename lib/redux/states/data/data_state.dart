@@ -1,6 +1,6 @@
-import 'package:xgenria/models/dashboard.dart';
-import 'package:xgenria/redux/actions/base.dart';
-import 'package:xgenria/redux/actions/data_actions.dart';
+import '../../../models/dashboard.dart';
+import '../../actions/base.dart';
+import '../../actions/data_actions.dart';
 
 class DataState {
   DashboardData? dashboard;

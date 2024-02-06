@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/models/user_data.dart';
+import '../models/access_token.dart';
+import '../models/user_data.dart';
 import '_config.dart' as cfg;
 
 abstract class AuthAPI {

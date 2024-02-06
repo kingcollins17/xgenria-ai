@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final radius = 50.0;
-final height = 50.0;
+const radius = 50.0;
+const height = 50.0;
 
 class HoverMenu extends StatefulWidget {
   const HoverMenu({super.key});
