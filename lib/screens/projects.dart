@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,7 +28,7 @@ class _XProjectState extends State<XProject> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _HeaderLogo(),
+                        const _HeaderLogo(),
                         const SizedBox(height: 30),
                         Text(
                           'Start your Project',
@@ -40,16 +42,16 @@ class _XProjectState extends State<XProject> {
                           'Create and manage your Xgenria AI projects',
                           style: GoogleFonts.poppins(
                             fontSize: 14,
-                            color: Color(0xFFBBBBBB),
+                            color: const Color(0xFFBBBBBB),
                           ),
                         ),
                         const SizedBox(height: 20),
                         Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFF313131),
+                            color: const Color(0xFF313131),
                             borderRadius: BorderRadius.circular(25),
                           ),
-                          child: TextField(
+                          child: const TextField(
                             decoration: InputDecoration(
                               prefixIcon: Icon(
                                 Icons.search,
@@ -70,12 +72,12 @@ class _XProjectState extends State<XProject> {
                               gradient: LinearGradient(colors: [
                                 Theme.of(context).colorScheme.primary,
                                 Theme.of(context).colorScheme.secondary,
-                                Color(0xFF7BABFF)
+                                const Color(0xFF7BABFF)
                               ])),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add, size: 25),
+                                const Icon(Icons.add, size: 25),
                                 Text(
                                   'Add New Project',
                                   style: GoogleFonts.poppins(),
@@ -97,16 +99,18 @@ class _XProjectState extends State<XProject> {
                             scrollDirection: Axis.horizontal,
                             itemCount: 4,
                             itemBuilder: (context, index) => Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
                               child: Center(
                                 child: Container(
                                   height: 140,
                                   width:
                                       MediaQuery.of(context).size.width * 0.45,
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: Color(0xFF1F1F1F),
+                                    color: const Color(0xFF1F1F1F),
                                   ),
                                   child: Column(
                                       crossAxisAlignment:
@@ -114,23 +118,24 @@ class _XProjectState extends State<XProject> {
                                       children: [
                                         const SizedBox(height: 10),
                                         Container(
-                                          padding: EdgeInsets.all(8),
+                                          padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                              color: Color(0x249E9E9E),
+                                              color: const Color(0x249E9E9E),
                                               border: Border.all(
-                                                  color: Color(0x73797979)),
+                                                  color:
+                                                      const Color(0x73797979)),
                                               shape: BoxShape.circle),
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.folder,
-                                            size: 15,
+                                            size: 12,
                                             color: Color(0xFFB6B5B5),
                                           ),
                                         ),
                                         const SizedBox(height: 10),
                                         Text(
                                           'My Video',
-                                          style: GoogleFonts.quicksand(
-                                            fontSize: 20,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 18,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -141,8 +146,8 @@ class _XProjectState extends State<XProject> {
                                             color: Colors.grey,
                                           ),
                                         ),
-                                        SizedBox(height: 10),
-                                        _ProgressBar(),
+                                        const SizedBox(height: 10),
+                                        const _ProgressBar(),
                                         const SizedBox(height: 5),
                                       ]),
                                 ),
@@ -165,7 +170,7 @@ class _XProjectState extends State<XProject> {
               ),
             ),
           ),
-          Positioned(
+          const Positioned(
             bottom: 10,
             child: HoverMenu(),
           )
@@ -198,7 +203,7 @@ class _HeaderLogo extends StatelessWidget {
               'Xgenria AI',
               style: GoogleFonts.poppins(
                 fontSize: 15,
-                color: Color(0xFFDADADA),
+                color: const Color(0xFFDADADA),
               ),
             ),
           ],
@@ -224,13 +229,13 @@ class _ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = 8.0;
-    final radius = 15.0;
+    const height = 8.0;
+    const radius = 15.0;
     return Container(
       width: MediaQuery.of(context).size.width * 0.4,
       // alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-          color: Color(0xFF505050),
+          color: const Color(0xFF505050),
           borderRadius: BorderRadius.circular(radius)),
       height: height,
       child: LayoutBuilder(

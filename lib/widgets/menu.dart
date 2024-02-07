@@ -11,10 +11,10 @@ class HoverMenu extends StatefulWidget {
   State<HoverMenu> createState() => _HoverMenuState();
 }
 
-enum _Destination { home, explore, projects, me }
+enum HoverDestination { home, explore, projects, me }
 
 class _HoverMenuState extends State<HoverMenu> {
-  var groupValue = _Destination.home;
+  var groupValue = HoverDestination.home;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -35,28 +35,28 @@ class _HoverMenuState extends State<HoverMenu> {
               _IconWrap(
                 icon: Icons.home_outlined,
                 selectedIcon: Icons.home_rounded,
-                value: _Destination.home,
+                value: HoverDestination.home,
                 groupValue: groupValue,
                 onPress: (p0) => setState(() => groupValue = p0),
               ),
               _IconWrap(
                 icon: Icons.explore_outlined,
                 selectedIcon: Icons.explore_rounded,
-                value: _Destination.explore,
+                value: HoverDestination.explore,
                 groupValue: groupValue,
                 onPress: (p0) => setState(() => groupValue = p0),
               ),
               _IconWrap(
                 icon: Icons.grid_view_outlined,
                 selectedIcon: Icons.grid_view_rounded,
-                value: _Destination.projects,
+                value: HoverDestination.projects,
                 groupValue: groupValue,
                 onPress: (p0) => setState(() => groupValue = p0),
               ),
               _IconWrap(
                 icon: Icons.person_4_outlined,
                 selectedIcon: Icons.person_rounded,
-                value: _Destination.me,
+                value: HoverDestination.me,
                 groupValue: groupValue,
                 onPress: (p0) => setState(() => groupValue = p0),
               ),
@@ -80,8 +80,8 @@ class _IconWrap extends StatelessWidget {
   });
   // final bool isSelected;
   final IconData icon, selectedIcon;
-  final _Destination value, groupValue;
-  final void Function(_Destination)? onPress;
+  final HoverDestination value, groupValue;
+  final void Function(HoverDestination)? onPress;
 
   @override
   Widget build(BuildContext context) {

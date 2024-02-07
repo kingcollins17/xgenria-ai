@@ -1,9 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:flutter_redux/flutter_redux.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'screens/screens.dart';
 import 'theme.dart';
 
@@ -12,7 +11,7 @@ void main() {
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Xgenria AI',
-      initialRoute: '/gen-image',
+      initialRoute: '/project',
       onGenerateRoute: _onGenerateRoute,
       theme: XgenriaTheme.dark,
     ),
@@ -29,10 +28,18 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       page = XAuth();
     case '/project':
       page = XProject();
-
+    case '/chats':
+      page = ChatList();
+    case '/chatbox':
+      page = ChatBox();
     case '/gen-image':
       page = ImageScreen();
+    case '/ai-docs':
+      page = AIDocuments();
     default:
   }
-  return MaterialPageRoute(builder: (context) => page);
+  return MaterialPageRoute(
+    settings: settings,
+    builder: (context) => page,
+  );
 }
