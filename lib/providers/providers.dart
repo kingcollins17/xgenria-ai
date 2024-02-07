@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:xgenria/models/access_token.dart';
 import 'package:xgenria/api/dash_board.dart';
 
-part 'dio_provider.g.dart';
+part 'providers.g.dart';
 
 @riverpod
 Dio dio(DioRef ref) {
