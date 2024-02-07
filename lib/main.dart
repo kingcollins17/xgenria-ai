@@ -8,11 +8,11 @@ import 'screens/screens.dart';
 import 'theme.dart';
 
 void main() {
-  runApp(
-    ProviderScope(
+  runApp(ProviderScope(
     child: MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Xgenria AI',
-      initialRoute: '/',
+      initialRoute: '/gen-image',
       onGenerateRoute: _onGenerateRoute,
       theme: XgenriaTheme.dark,
     ),
@@ -25,6 +25,13 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
     case '/':
       page = XOnboard();
       break;
+    case '/auth':
+      page = XAuth();
+    case '/project':
+      page = XProject();
+
+    case '/gen-image':
+      page = ImageScreen();
     default:
   }
   return MaterialPageRoute(builder: (context) => page);
