@@ -6,13 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
-import '../providers/dio_provider.dart';
-import '../redux/actions/auth_action.dart';
-import '../redux/actions/base.dart';
-import '../redux/actions/data_actions.dart';
-import '../redux/states/auth/auth_state.dart';
-import '../redux/states/auth/payloads.dart';
-import '../redux/xgenria_state.dart';
+import '../providers/providers.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../widgets/pop_up.dart';
 
@@ -95,9 +89,7 @@ class _XAuthState extends ConsumerState<XAuth>
                     ],
                   ),
                   const SizedBox(height: 30),
-                  StoreConnector<XgenriaState, _ViewModel>(
-                    converter: (store) => _ViewModel(store),
-                    builder: (context, vm) => Form(
+                  Form(
                         key: formKey,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -158,42 +150,15 @@ class _XAuthState extends ConsumerState<XAuth>
                                   ),
                                 ),
                                 onPressed: () {
-                                  // context.go('/home');
-                                  vm.dispatch(AuthStateAction(
-                                      type: AuthActionType.login,
-                                      payload: LoginPayload(
-                                        client: dio,
-                                        email: email!,
-                                        password: password!,
-                                        onDone: () {
-                                          showPopUp(controller);
-                                          vm.dispatch(DataStateAction(
-                                              type:
-                                                  DataActionType.fetchDashboard,
-                                              payload: FetchDashboardPayload(
-                                                  dio: ref.read(dioProvider),
-                                                  token: vm.state.accessToken!,
-                                                  onDone: (data) =>
-                                                      Future.delayed(
-                                                          Duration(seconds: 2),
-                                                          () {
-                                                        context.go('/home');
-                                                      }))));
-                                        },
-                                      )));
-                                },
-                                child: vm.state.isLoading
-                                    ? SpinKitThreeInOut(
-                                        size: 20,
-                                        color: Color(0xFFFAF9F9),
-                                      )
-                                    : Text(
+                                // conte
+                              },
+                              child: Text(
                                         'Login',
                                         style: GoogleFonts.quicksand(
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .bodySmall,
-                                            color: Color(0xFFFAF9F9),
+                                    color: const Color(0xFFFAF9F9),
                                             fontWeight: FontWeight.w500),
                                       ),
                               ),
@@ -223,16 +188,10 @@ class _XAuthState extends ConsumerState<XAuth>
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              if (vm.state.notification != null)
-                                PopUp(
-                                  animation: controller,
-                                  message: vm.state.notification?.message ??
-                                      'Something went wrong',
-                                )
+                          
                             ],
                           ),
-                        )),
-                  )
+                      )),
                 ]),
           ),
         ),
@@ -241,15 +200,6 @@ class _XAuthState extends ConsumerState<XAuth>
   }
 }
 
-class _ViewModel {
-  final AuthState state;
-  final Store<XgenriaState> _store;
-  _ViewModel(Store<XgenriaState> store)
-      : _store = store,
-        state = store.state.authState;
-
-  void dispatch(XgenriaStateAction action) => _store.dispatch(action);
-}
 
 class _InputField extends StatelessWidget {
   const _InputField({
@@ -282,7 +232,7 @@ class _InputField extends StatelessWidget {
             ),
           ),
         ),
-        SB(height: 10),
+        const SB(height: 10),
         Container(
           // height: 60,
           decoration: BoxDecoration(
@@ -294,7 +244,7 @@ class _InputField extends StatelessWidget {
             keyboardType: type,
             obscureText: obscureText,
             onChanged: onChanged,
-            cursorColor: Color(0xFF494949),
+            cursorColor: const Color(0xFF494949),
             style: GoogleFonts.quicksand(
               textStyle: Theme.of(context).textTheme.bodySmall,
               fontWeight: FontWeight.w500,
@@ -305,7 +255,7 @@ class _InputField extends StatelessWidget {
               isDense: true,
               suffixIcon: suffixIcon,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
               hintText: hint,

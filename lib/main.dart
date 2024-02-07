@@ -4,27 +4,17 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'redux/store.dart';
-import 'redux/xgenria_state.dart';
-import 'screens/onboard.dart';
-
-
+import 'screens/screens.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-    StoreProvider<XgenriaState>(
-      store: createStore(),
-        child: ProviderScope(
-          child: MaterialApp(
-            onGenerateRoute: _onGenerateRoute,
-          ),
-        )),
-  );
+    ProviderScope(
+    child: MaterialApp(
+      onGenerateRoute: _onGenerateRoute,
+    ),
+  ));
 }
-
-
 
 MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
   Widget page = const SizedBox();

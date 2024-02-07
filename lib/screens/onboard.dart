@@ -74,7 +74,7 @@ class _XOnboardState extends State<XOnboard> {
                                 Theme.of(context).colorScheme.primary,
                               )),
                           onPressed: () {
-                            context.go('/auth');
+                            // context.go('/auth');
                           },
                           child: Text(
                             'Get started',
