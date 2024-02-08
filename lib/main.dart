@@ -11,7 +11,7 @@ void main() {
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Xgenria AI',
-      initialRoute: '/project',
+      initialRoute: '/create-doc',
       onGenerateRoute: _onGenerateRoute,
       theme: XgenriaTheme.dark,
     ),
@@ -26,17 +26,29 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       break;
     case '/auth':
       page = XAuth();
+      break;
     case '/project':
       page = XProject();
+      break;
     case '/chats':
       page = ChatList();
+      break;
     case '/chatbox':
       page = ChatBox();
+      break;
     case '/gen-image':
       page = ImageScreen();
+      break;
+    case '/ai-doc':
     case '/ai-docs':
       page = AIDocuments();
+      break;
+    case '/create-docs':
+    case '/create-doc':
+      page = CreateDocument();
+      break;
     default:
+      break;
   }
   return MaterialPageRoute(
     settings: settings,
