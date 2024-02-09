@@ -170,10 +170,6 @@ class _XProjectState extends State<XProject> {
               ),
             ),
           ),
-          const Positioned(
-            bottom: 10,
-            child: HoverMenu(),
-          )
         ],
       ),
     );

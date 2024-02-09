@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -5,7 +7,9 @@ const radius = 50.0;
 const height = 50.0;
 
 class HoverMenu extends StatefulWidget {
-  const HoverMenu({super.key});
+  const HoverMenu({super.key, this.isOpen = true, this.onChanged});
+  final bool isOpen;
+  final void Function(HoverDestination)? onChanged;
 
   @override
   State<HoverMenu> createState() => _HoverMenuState();
@@ -13,7 +17,31 @@ class HoverMenu extends StatefulWidget {
 
 enum HoverDestination { home, explore, projects, me }
 
-class _HoverMenuState extends State<HoverMenu> {
+class _HoverMenuState extends State<HoverMenu>
+    with SingleTickerProviderStateMixin {
+  bool isOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isOpen = widget.isOpen;
+  }
+
+  @override
+  void didUpdateWidget(covariant HoverMenu oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    isOpen = widget.isOpen;
+  }
+
+  void navigate(HoverDestination destination) {
+    setState(() {
+      groupValue = destination;
+      if (widget.onChanged != null) {
+        widget.onChanged!(groupValue);
+      }
+    });
+  }
+
   var groupValue = HoverDestination.home;
   @override
   Widget build(BuildContext context) {
@@ -22,46 +50,60 @@ class _HoverMenuState extends State<HoverMenu> {
       height: 90,
       child: Align(
         alignment: Alignment.center,
-        child: Container(
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
           height: height,
-          width: MediaQuery.of(context).size.width * 0.9,
+          width: isOpen ? MediaQuery.of(context).size.width * 0.9 : 70,
           decoration: BoxDecoration(
-            color: Color(0xFF313131),
+            gradient: isOpen
+                ? null
+                : LinearGradient(colors: [
+                    Theme.of(context).colorScheme.secondary,
+                    Theme.of(context).colorScheme.primary
+                  ]),
+            color: const Color(0xFF313131),
             borderRadius: BorderRadius.circular(radius),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _IconWrap(
-                icon: Icons.home_outlined,
-                selectedIcon: Icons.home_rounded,
-                value: HoverDestination.home,
-                groupValue: groupValue,
-                onPress: (p0) => setState(() => groupValue = p0),
-              ),
-              _IconWrap(
-                icon: Icons.explore_outlined,
-                selectedIcon: Icons.explore_rounded,
-                value: HoverDestination.explore,
-                groupValue: groupValue,
-                onPress: (p0) => setState(() => groupValue = p0),
-              ),
-              _IconWrap(
-                icon: Icons.grid_view_outlined,
-                selectedIcon: Icons.grid_view_rounded,
-                value: HoverDestination.projects,
-                groupValue: groupValue,
-                onPress: (p0) => setState(() => groupValue = p0),
-              ),
-              _IconWrap(
-                icon: Icons.person_4_outlined,
-                selectedIcon: Icons.person_rounded,
-                value: HoverDestination.me,
-                groupValue: groupValue,
-                onPress: (p0) => setState(() => groupValue = p0),
-              ),
-            ],
-          ),
+          child: isOpen
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _IconWrap(
+                      icon: Icons.home_outlined,
+                      selectedIcon: Icons.home_rounded,
+                      value: HoverDestination.home,
+                      groupValue: groupValue,
+                      onPress: navigate,
+                    ),
+                    _IconWrap(
+                      icon: Icons.explore_outlined,
+                      selectedIcon: Icons.explore_rounded,
+                      value: HoverDestination.explore,
+                      groupValue: groupValue,
+                      onPress: navigate,
+                    ),
+                    _IconWrap(
+                      icon: Icons.grid_view_outlined,
+                      selectedIcon: Icons.grid_view_rounded,
+                      value: HoverDestination.projects,
+                      groupValue: groupValue,
+                      onPress: navigate,
+                    ),
+                    _IconWrap(
+                      icon: Icons.person_4_outlined,
+                      selectedIcon: Icons.person_rounded,
+                      value: HoverDestination.me,
+                      groupValue: groupValue,
+                      onPress: navigate,
+                    ),
+                  ],
+                )
+              : GestureDetector(
+                  onTap: () => setState(() => isOpen = true),
+                  child: Icon(Icons.arrow_back_ios_new_rounded,
+                      size: 15, color: Colors.white),
+                ),
         ),
       ),
     );

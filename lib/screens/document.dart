@@ -204,7 +204,7 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
                         4,
                         (index) => Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
                               child: Text(
                                 '${index + 1} variants',
                                 style: GoogleFonts.poppins(fontSize: 16),
@@ -220,7 +220,7 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
                             value: index + 1,
                             child: Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
+                                  horizontal: 15, vertical: 10),
                               decoration: BoxDecoration(),
                               child: Text(
                                 '${index + 1} variants',
@@ -253,14 +253,18 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
               ),
               const SizedBox(height: 10),
               Container(
-                color: Color(0xFF1D1D1D),
+                color: Color(0xFF2C2C2C),
                 child: DropdownButtonFormField<String>(
                     value: languages.first,
                     selectedItemBuilder: (context) =>
                         List.generate(languages.length, (index) {
-                          return Text(
-                            languages[index],
-                            style: GoogleFonts.poppins(fontSize: 16),
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: Text(
+                              languages[index],
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
                           );
                         }),
                     items: List.generate(

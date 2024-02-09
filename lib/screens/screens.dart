@@ -4,3 +4,4 @@ export 'onboard.dart';
 export 'image_gen.dart';
 export 'chats.dart';
 export 'document.dart';
+export 'home_screen.dart';

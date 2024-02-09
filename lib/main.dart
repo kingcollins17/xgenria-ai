@@ -11,7 +11,7 @@ void main() {
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Xgenria AI',
-      initialRoute: '/create-doc',
+      initialRoute: '/home',
       onGenerateRoute: _onGenerateRoute,
       theme: XgenriaTheme.dark,
     ),
@@ -23,6 +23,9 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
     case '/':
       page = XOnboard();
+      break;
+    case '/home':
+      page = HomeScreen();
       break;
     case '/auth':
       page = XAuth();
