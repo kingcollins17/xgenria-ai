@@ -16,4 +16,22 @@ abstract class ImageAPI {
       return e;
     }
   }
+
+  static Future<dynamic> createImage(
+    Dio dio,
+    AccessToken token, {
+    String name = '',
+    required String input,
+    String style = '3D Render',
+    String size = '1024x1024',
+  }) async {
+    try {
+      final response = await dio.post(
+          Uri.https(cfg.domain, '/image/create').toString(),
+          data: {},
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+    } catch (e) {
+      return e;
+    }
+  }
 }

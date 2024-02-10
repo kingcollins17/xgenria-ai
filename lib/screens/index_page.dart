@@ -56,35 +56,41 @@ class IndexPage extends StatelessWidget {
                 children: [
                   ...List.generate(
                       actions.length,
-                      (index) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 2.0, vertical: 2),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.42,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF2E2E2E),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15.0,
+                      (index) => GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed(
+                              actions[index].$4,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 2.0, vertical: 2),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.42,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF2B2B2B),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    Image.asset(actions[index].$1,
-                                        width: 30, height: 30),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      actions[index].$2,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      Image.asset(actions[index].$1,
+                                          width: 30, height: 30),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        actions[index].$2,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -184,24 +190,28 @@ class IndexPage extends StatelessWidget {
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 15),
-                              width: MediaQuery.of(context).size.width * 0.65,
+                              width: MediaQuery.of(context).size.width * 0.5,
                               height: 100,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
-                                  color: Color(0xFF202020)),
+                                  color: Color(0xFF272727)),
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Align(
                                         alignment: Alignment.centerLeft,
                                         child: Container(
+                                          padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(
                                               shape: BoxShape.circle,
+                                              
                                               border: Border.all(
-                                                  color: Colors.grey)),
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                           child: Icon(
                                             Icons.folder_rounded,
-                                            size: 15,
+                                            size: 10,
                                             color: Colors.grey,
                                           ),
                                         )),
@@ -243,21 +253,25 @@ final actions = [
   (
     'asset/images/icon-2.png',
     'Create AI Image',
-    'Have our AI be that expert programmer who whispers tough code snippets to you'
+    'Have our AI be that expert programmer who whispers tough code snippets to you',
+    '/gen-image'
   ),
   (
     'asset/images/icon-4.png',
     'Create Documents',
-    'Create captivating content and captions for social media postings'
+    'Create captivating content and captions for social media postings',
+    '/ai-docs'
   ),
   (
     'asset/images/icon-6.png',
     'Chat with Xgenria AI',
-    'Easily chat with our very capable language models about everything and anything'
+    'Easily chat with our very capable language models about everything and anything',
+    '/chats'
   ),
   (
-    'asset/images/icon-6.png',
+    'asset/images/icon-5.png',
     'Transcribe documents',
-    'Easily chat with our very capable language models about everything and anything'
+    'Easily chat with our very capable language models about everything and anything',
+    '/test'
   )
 ];

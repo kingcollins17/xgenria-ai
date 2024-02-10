@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:xgenria/widgets/menu.dart';
 
+import '../widgets/progress_bar.dart';
+
 class XProject extends StatefulWidget {
   const XProject({super.key});
 
@@ -118,7 +120,7 @@ class _XProjectState extends State<XProject> {
                                       children: [
                                         const SizedBox(height: 10),
                                         Container(
-                                          padding: const EdgeInsets.all(8),
+                                          padding: const EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               color: const Color(0x249E9E9E),
                                               border: Border.all(
@@ -127,11 +129,11 @@ class _XProjectState extends State<XProject> {
                                               shape: BoxShape.circle),
                                           child: const Icon(
                                             Icons.folder,
-                                            size: 12,
+                                            size: 10,
                                             color: Color(0xFFB6B5B5),
                                           ),
                                         ),
-                                        const SizedBox(height: 10),
+                                        const SizedBox(height: 30),
                                         Text(
                                           'My Video',
                                           style: GoogleFonts.poppins(
@@ -146,8 +148,7 @@ class _XProjectState extends State<XProject> {
                                             color: Colors.grey,
                                           ),
                                         ),
-                                        const SizedBox(height: 10),
-                                        const _ProgressBar(),
+                                
                                         const SizedBox(height: 5),
                                       ]),
                                 ),
@@ -210,44 +211,6 @@ class _HeaderLogo extends StatelessWidget {
           height: 35,
         )
       ],
-    );
-  }
-}
-
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({
-    super.key,
-    this.total = 10,
-    this.value = 7,
-  });
-  final int total, value;
-  // final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    const height = 8.0;
-    const radius = 15.0;
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.4,
-      // alignment: Alignment.centerLeft,
-      decoration: BoxDecoration(
-          color: const Color(0xFF505050),
-          borderRadius: BorderRadius.circular(radius)),
-      height: height,
-      child: LayoutBuilder(
-          builder: (context, constraints) => Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  height: height,
-                  width: (value / total) * constraints.maxWidth,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(radius),
-                      gradient: LinearGradient(colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary,
-                      ])),
-                ),
-              )),
     );
   }
 }

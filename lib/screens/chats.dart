@@ -150,26 +150,111 @@ class _ChatListState extends ConsumerState<ChatList> {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        constraints:
-            BoxConstraints(minHeight: 55, minWidth: 100, maxWidth: 130),
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            gradient: LinearGradient(colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.secondary
-            ])),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Create Chat'),
-            const SizedBox(width: 4),
-            Icon(Icons.add_rounded)
-          ],
+      floatingActionButton: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed('/create-chat');
+        },
+        child: Container(
+          constraints:
+              BoxConstraints(minHeight: 55, minWidth: 100, maxWidth: 130),
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              gradient: LinearGradient(colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary
+              ])),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Create Chat'),
+              const SizedBox(width: 4),
+              Icon(Icons.add_rounded)
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+}
+
+class CreateChat extends ConsumerStatefulWidget {
+  const CreateChat({super.key});
+  @override
+  ConsumerState<CreateChat> createState() => _CreateChatState();
+}
+
+class _CreateChatState extends ConsumerState<CreateChat> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.85,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Column(children: [
+            const SizedBox(height: 15),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'AI Chats',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Image.asset('asset/images/icon-6.png', width: 150, height: 150),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Name'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                isDense: true,
+                border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                  color: Color(0xFFC7C7C7),
+                )),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+                child: Align(
+              alignment: Alignment.bottomCenter,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    Navigator.of(context).pushNamed('/chatbox');
+                  });
+                },
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      gradient: LinearGradient(colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary,
+                      ])),
+                  child: Text(
+                    'Create chat',
+                    style: GoogleFonts.poppins(fontSize: 16),
+                  ),
+                ),
+              ),
+            ))
+          ]),
+        ),
+      ),
     );
   }
 }

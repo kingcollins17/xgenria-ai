@@ -23,7 +23,10 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
     ('asset/style/glass.jpg', 'Glass'),
     ('asset/webp/Cute-front-portrait-AI-art.webp', 'Anime')
   ];
-  final sizes = [(1024, 1024), (800, 600), (1024, 768), (600, 480), (800, 640)];
+  final sizes = [(256, 256), (512, 512), (1024, 1024)];
+  int variants = 1;
+  int lightingIndex = 0;
+  int artistIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +120,72 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
+                  'Select Artist',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                decoration: BoxDecoration(
+                  color: Color(0xFF222222),
+                ),
+                child: DropdownButtonFormField<int>(
+                  value: artistIndex,
+                  items: [
+                    ...List.generate(
+                        artists.length,
+                        (index) => DropdownMenuItem(
+                            value: index,
+                            child: Text(
+                              artists[index],
+                              style: GoogleFonts.poppins(fontSize: 14),
+                            )))
+                  ],
+                  onChanged: (value) =>
+                      setState(() => artistIndex = value ?? artistIndex),
+                ),
+              ),
+              const SizedBox(height: 40),
+              Column(
+                children: [
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Select number of variants',
+                        style: GoogleFonts.poppins(fontSize: 16),
+                      )),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(color: Color(0xFF222222)),
+                    child: DropdownButtonFormField<int>(
+                      value: variants,
+                      items: [
+                        ...List.generate(
+                          4,
+                          (index) => DropdownMenuItem(
+                            value: index + 1,
+                            child: Text(
+                              '${index + 1} variants',
+                              style: GoogleFonts.poppins(fontSize: 14),
+                            ),
+                          ),
+                        )
+                      ],
+                      onChanged: (value) => setState(() {
+                        variants = value ?? variants;
+                      }),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
                   'Select your style',
                   style: GoogleFonts.quicksand(
                       fontSize: 16, fontWeight: FontWeight.w500),
@@ -167,23 +236,61 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                constraints: BoxConstraints(
-                    minHeight: 55,
-                    minWidth: MediaQuery.of(context).size.width * 0.8),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    gradient: LinearGradient(colors: [
-                      Theme.of(context).colorScheme.secondary,
-                      Theme.of(context).colorScheme.primary,
-                    ])),
+              Align(
+                alignment: Alignment.centerLeft,
                 child: Text(
-                  'Generate Image',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.quicksand(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                  'Lighting',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(color: Color(0xFF242424)),
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: DropdownButtonFormField<int>(
+                  // value: lightingIndex[lightingIndex],
+                  value: lightingIndex,
+                  items: [
+                    ...List.generate(
+                      lighting.length,
+                      (index) => DropdownMenuItem(
+                          value: index,
+                          child: Text(
+                            lighting[index],
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                            ),
+                          )),
+                    )
+                  ],
+                  onChanged: (value) => setState(() {
+                    lightingIndex = value ?? lightingIndex;
+                  }),
+                ),
+              ),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed('/image-result');
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  constraints: BoxConstraints(
+                      minHeight: 55,
+                      minWidth: MediaQuery.of(context).size.width * 0.8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      gradient: LinearGradient(colors: [
+                        Theme.of(context).colorScheme.secondary,
+                        Theme.of(context).colorScheme.primary,
+                      ])),
+                  child: Text(
+                    'Generate Image',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.quicksand(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -194,3 +301,33 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
     );
   }
 }
+
+final artists = [
+  'Leonardo Da Vinci',
+  'Vincent Van Gogh',
+  'Pablo picasso',
+  'Salvador Dali',
+  'Banksy',
+  'Takashi Murakami',
+  'George Condo',
+  'Tim Burton',
+  'Normal Rockwell',
+  'Andy warhol',
+  'Claude Monet'
+];
+
+final lighting = [
+  'Warm',
+  'Cold',
+  'Golden hour',
+  'Blue hour',
+  'Ambient',
+  'Studio',
+  'Neon',
+  'Dramatic',
+  'Cinematic',
+  'Natural',
+  'Foggy',
+  'Backlight',
+  'Hard'
+];

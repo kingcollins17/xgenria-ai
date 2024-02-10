@@ -39,10 +39,10 @@ abstract class AuthAPI {
   ///returns null for token and an error message if login is unsuccessful
   static Future<({AccessToken? token, String message})> login(
     Dio dio, {
-    // String email = 'ajayimarvellous777@gmail.com',
-    String email = 'kingcollins172@gmail.com',
-    // String password = 'password',
-    String password = 'kingpass',
+    String email = 'ajayimarvellous777@gmail.com',
+    // String email = 'kingcollins172@gmail.com',
+    String password = 'password',
+    // String password = 'kingpass',
     bool rememberMe = true,
   }) async {
     try {

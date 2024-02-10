@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
+import 'package:xgenria/providers/auth_provider.dart';
 import '../providers/providers.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../widgets/pop_up.dart';
@@ -21,8 +23,10 @@ class _XAuthState extends ConsumerState<XAuth>
     with SingleTickerProviderStateMixin {
   final formKey = GlobalKey<FormState>();
   bool obscurePassword = false;
+  bool isLoading = false;
   String? email, password;
 
+  Widget? popUp;
   late AnimationController controller;
 
   @override
@@ -40,7 +44,8 @@ class _XAuthState extends ConsumerState<XAuth>
   @override
   Widget build(BuildContext context) {
     // var xgenriaSettings = Hive.box<XgenriaSettings>('settings').get('default')!;
-    final dio = ref.watch(dioProvider);
+    // final dio = ref.watch(dioProvider);
+
     return Stack(
       children: [
         Scaffold(
@@ -90,116 +95,139 @@ class _XAuthState extends ConsumerState<XAuth>
                   ),
                   const SizedBox(height: 30),
                   Form(
-                        key: formKey,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Column(
-                            children: [
-                              _InputField(
-                                label: 'Email Address',
-                                hint: 'Your email',
-                                validator: (p0) => p0 == null || p0.isEmpty
-                                    ? "Email is required to login"
-                                    : null,
-                                type: TextInputType.emailAddress,
-                                onChanged: (p0) => email = p0,
-                              ),
-                              const SB(height: 30),
-                              _InputField(
-                                hint: 'Your password',
-                                label: 'Password',
-                                onChanged: (p0) => password = p0,
-                                type: TextInputType.visiblePassword,
-                                obscureText: obscurePassword,
-                                suffixIcon: GestureDetector(
-                                    onTap: () => setState(() =>
-                                        obscurePassword = !obscurePassword),
-                                    child: Icon(
-                                        obscurePassword
-                                            ? Icons.visibility_off_rounded
-                                            : Icons.visibility_rounded,
-                                        size: 20,
-                                        color:
-                                            Theme.of(context).iconTheme.color)),
-                              ),
-                              const SizedBox(height: 10),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      context.go('/auth/forgot-password'),
-                                  child: Text(
-                                    'Forgot Password?  ',
-                                    style: GoogleFonts.urbanist(
-                                      textStyle:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
+                      key: formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Column(
+                          children: [
+                            _InputField(
+                              label: 'Email Address',
+                              hint: 'Your email',
+                              validator: (p0) => p0 == null || p0.isEmpty
+                                  ? "Email is required to login"
+                                  : null,
+                              type: TextInputType.emailAddress,
+                              onChanged: (p0) => email = p0,
+                            ),
+                            const SB(height: 30),
+                            _InputField(
+                              hint: 'Your password',
+                              label: 'Password',
+                              onChanged: (p0) => password = p0,
+                              type: TextInputType.visiblePassword,
+                              validator: (p0) => p0 == null || p0.isEmpty
+                                  ? "Password is required"
+                                  : null,
+                              obscureText: obscurePassword,
+                              suffixIcon: GestureDetector(
+                                  onTap: () => setState(
+                                      () => obscurePassword = !obscurePassword),
+                                  child: Icon(
+                                      obscurePassword
+                                          ? Icons.visibility_off_rounded
+                                          : Icons.visibility_rounded,
+                                      size: 20,
+                                      color:
+                                          Theme.of(context).iconTheme.color)),
+                            ),
+                            const SizedBox(height: 10),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                child: Text(
+                                  'Forgot Password?  ',
+                                  style: GoogleFonts.urbanist(
+                                    textStyle:
+                                        Theme.of(context).textTheme.bodySmall,
                                   ),
                                 ),
                               ),
-                              const SB(height: 30),
-                              FilledButton(
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStatePropertyAll(
-                                      Theme.of(context).colorScheme.primary),
-                                  fixedSize: MaterialStatePropertyAll(
-                                    Size(
-                                        MediaQuery.of(context).size.width *
-                                            0.85,
-                                        45),
-                                  ),
+                            ),
+                            const SB(height: 30),
+                            FilledButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                    Theme.of(context).colorScheme.primary),
+                                fixedSize: MaterialStatePropertyAll(
+                                  Size(MediaQuery.of(context).size.width * 0.85,
+                                      45),
                                 ),
-                                onPressed: () {
-                                // conte
+                              ),
+                              onPressed: () {
+                                if ((!isLoading) &&
+                                    (formKey.currentState?.validate() ??
+                                        false)) {
+                                  setState(() => isLoading = true);
+                                  ref
+                                      .read(authNotifierProvider.notifier)
+                                      .login(email: email!, password: password!)
+                                      .then((value) {
+                                    setState(() {
+                                      isLoading = false;
+                                      popUp = PopUp(
+                                          animation: controller,
+                                          message: value.toString());
+                                    });
+                                    showPopUp(controller).then((value) =>
+                                        Navigator.popAndPushNamed(
+                                            context, '/home'));
+                                  });
+                                }
                               },
-                              child: Text(
-                                        'Login',
-                                        style: GoogleFonts.quicksand(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
+                              child: isLoading
+                                  ? SpinKitThreeInOut(
+                                      color: Colors.white, size: 20)
+                                  : Text(
+                                      'Login',
+                                      style: GoogleFonts.quicksand(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
                                     color: const Color(0xFFFAF9F9),
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Don't have an account? ",
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Don't have an account? ",
+                                  style: GoogleFonts.urbanist(
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall),
+                                ),
+                                GestureDetector(
+                                  child: Text(
+                                    'Register',
                                     style: GoogleFonts.urbanist(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.w600,
                                         textStyle: Theme.of(context)
                                             .textTheme
                                             .bodySmall),
                                   ),
-                                  GestureDetector(
-                                    child: Text(
-                                      'Register',
-                                      style: GoogleFonts.urbanist(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          fontWeight: FontWeight.w600,
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                          
-                            ],
-                          ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       )),
                 ]),
           ),
         ),
+        if (popUp != null)
+          Positioned(
+              bottom: 10,
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width, child: popUp!)),
       ],
     );
   }
 }
-
 
 class _InputField extends StatelessWidget {
   const _InputField({
@@ -236,7 +264,8 @@ class _InputField extends StatelessWidget {
         Container(
           // height: 60,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceTint,
+            // color: Theme.of(context).colorScheme.surfaceTint,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(5),
           ),
           child: TextFormField(
@@ -256,8 +285,10 @@ class _InputField extends StatelessWidget {
               suffixIcon: suffixIcon,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
+              border: const UnderlineInputBorder(),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary)),
               hintText: hint,
               hintStyle: GoogleFonts.quicksand(
                   color: Colors.grey,

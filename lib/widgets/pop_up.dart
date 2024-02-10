@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PopUp extends AnimatedWidget {
   const PopUp(
@@ -29,9 +30,15 @@ class PopUp extends AnimatedWidget {
               width: MediaQuery.of(context).size.width * 0.9,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               decoration: BoxDecoration(
-                  color: Color(0xFF3F3F3F),
+                  color: Color(0xFF292929),
                   borderRadius: BorderRadius.circular(10)),
-              child: Text(message, textAlign: TextAlign.center),
+              child: Text(message,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.quicksand(
+                    fontSize: 14,
+                    color: Colors.white,
+                    decoration: TextDecoration.none,
+                  )),
             )),
       ),
     );

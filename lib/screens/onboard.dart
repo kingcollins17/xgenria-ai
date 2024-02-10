@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class XOnboard extends StatefulWidget {
@@ -35,7 +35,7 @@ class _XOnboardState extends State<XOnboard> {
                     // image: AssetImage('asset/images/arcane-bg.jpg'),
                     image: AssetImage('asset/onboard/bg.JPEG'),
                     fit: BoxFit.fill,
-                    opacity: 0.8,
+                    opacity: 1,
                   ),
                 ),
               ),
@@ -74,7 +74,7 @@ class _XOnboardState extends State<XOnboard> {
                                 Theme.of(context).colorScheme.primary,
                               )),
                           onPressed: () {
-                            // context.go('/auth');
+                            Navigator.of(context).pushNamed('/auth');
                           },
                           child: Text(
                             'Get started',
