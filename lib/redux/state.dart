@@ -4,7 +4,6 @@ import 'package:xgenria/redux/actions/base.dart';
 import 'package:xgenria/redux/reducers/auth_reducer.dart';
 
 import 'mware/auth.dart';
-import 'state/auth.dart';
 
 class XgenriaState {
   AuthState auth;

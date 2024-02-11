@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:redux/redux.dart';
-import 'package:xgenria/providers/auth_provider.dart';
-import '../providers/providers.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../widgets/pop_up.dart';
+import 'package:redux/redux.dart';
+import 'package:xgenria/models/models.dart';
+import 'package:xgenria/providers/providers.dart';
+import 'package:xgenria/redux/core.dart';
+import 'package:xgenria/widgets/pop_up.dart';
 
 class XAuth extends ConsumerStatefulWidget {
   const XAuth({super.key});
@@ -25,6 +25,7 @@ class _XAuthState extends ConsumerState<XAuth>
   bool obscurePassword = false;
   bool isLoading = false;
   String? email, password;
+  bool rememberMe = true;
 
   Widget? popUp;
   late AnimationController controller;
@@ -43,185 +44,233 @@ class _XAuthState extends ConsumerState<XAuth>
 
   @override
   Widget build(BuildContext context) {
-    // var xgenriaSettings = Hive.box<XgenriaSettings>('settings').get('default')!;
-    // final dio = ref.watch(dioProvider);
-
     return Stack(
       children: [
         Scaffold(
           body: SingleChildScrollView(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SB(height: 20),
-                  const SizedBox(height: 50),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            child: StoreConnector<XgenriaState, _ViewModel>(
+              builder: (context, vm) {
+                return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Center(
-                          child: SvgPicture.asset(
-                        'asset/images/logo.svg',
-                        width: 90,
-                        height: 90,
-                        color: Theme.of(context).colorScheme.primary,
-                      )),
-                      const SizedBox(width: 10),
-                      Row(
+                      const SB(height: 20),
+                      const SizedBox(height: 50),
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Xgenria',
-                            style: GoogleFonts.quicksand(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.primary,
-                                textStyle:
-                                    Theme.of(context).textTheme.titleMedium),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            'AI',
-                            style: GoogleFonts.quicksand(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              textStyle:
-                                  Theme.of(context).textTheme.titleMedium,
-                            ),
+                          Center(
+                              child: SvgPicture.asset(
+                            'asset/images/logo.svg',
+                            width: 90,
+                            height: 90,
+                            color: Theme.of(context).colorScheme.primary,
+                          )),
+                          const SizedBox(width: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Xgenria',
+                                style: GoogleFonts.quicksand(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    textStyle: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'AI',
+                                style: GoogleFonts.quicksand(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  textStyle:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  Form(
-                      key: formKey,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
-                          children: [
-                            _InputField(
-                              label: 'Email Address',
-                              hint: 'Your email',
-                              validator: (p0) => p0 == null || p0.isEmpty
-                                  ? "Email is required to login"
-                                  : null,
-                              type: TextInputType.emailAddress,
-                              onChanged: (p0) => email = p0,
-                            ),
-                            const SB(height: 30),
-                            _InputField(
-                              hint: 'Your password',
-                              label: 'Password',
-                              onChanged: (p0) => password = p0,
-                              type: TextInputType.visiblePassword,
-                              validator: (p0) => p0 == null || p0.isEmpty
-                                  ? "Password is required"
-                                  : null,
-                              obscureText: obscurePassword,
-                              suffixIcon: GestureDetector(
-                                  onTap: () => setState(
-                                      () => obscurePassword = !obscurePassword),
-                                  child: Icon(
-                                      obscurePassword
-                                          ? Icons.visibility_off_rounded
-                                          : Icons.visibility_rounded,
-                                      size: 20,
-                                      color:
-                                          Theme.of(context).iconTheme.color)),
-                            ),
-                            const SizedBox(height: 10),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                child: Text(
-                                  'Forgot Password?  ',
-                                  style: GoogleFonts.urbanist(
-                                    textStyle:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SB(height: 30),
-                            FilledButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Theme.of(context).colorScheme.primary),
-                                fixedSize: MaterialStatePropertyAll(
-                                  Size(MediaQuery.of(context).size.width * 0.85,
-                                      45),
-                                ),
-                              ),
-                              onPressed: () {
-                                if ((!isLoading) &&
-                                    (formKey.currentState?.validate() ??
-                                        false)) {
-                                  setState(() => isLoading = true);
-                                  ref
-                                      .read(authNotifierProvider.notifier)
-                                      .login(email: email!, password: password!)
-                                      .then((value) {
-                                    setState(() {
-                                      isLoading = false;
-                                      popUp = PopUp(
-                                          animation: controller,
-                                          message: value.toString());
-                                    });
-                                    showPopUp(controller).then((value) =>
-                                        Navigator.popAndPushNamed(
-                                            context, '/home'));
-                                  });
-                                }
-                              },
-                              child: isLoading
-                                  ? SpinKitThreeInOut(
-                                      color: Colors.white, size: 20)
-                                  : Text(
-                                      'Login',
-                                      style: GoogleFonts.quicksand(
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                    color: const Color(0xFFFAF9F9),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                      const SizedBox(height: 30),
+                      Form(
+                          key: formKey,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Column(
                               children: [
-                                Text(
-                                  "Don't have an account? ",
-                                  style: GoogleFonts.urbanist(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall),
+                                _InputField(
+                                  label: 'Email Address',
+                                  hint: 'Your email',
+                                  validator: (p0) => p0 == null || p0.isEmpty
+                                      ? "Email is required to login"
+                                      : null,
+                                  type: TextInputType.emailAddress,
+                                  onChanged: (p0) => email = p0,
                                 ),
-                                GestureDetector(
-                                  child: Text(
-                                    'Register',
-                                    style: GoogleFonts.urbanist(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontWeight: FontWeight.w600,
+                                const SB(height: 30),
+                                _InputField(
+                                  hint: 'Your password',
+                                  label: 'Password',
+                                  onChanged: (p0) => password = p0,
+                                  type: TextInputType.visiblePassword,
+                                  validator: (p0) => p0 == null || p0.isEmpty
+                                      ? "Password is required"
+                                      : null,
+                                  obscureText: obscurePassword,
+                                  suffixIcon: GestureDetector(
+                                      onTap: () => setState(() =>
+                                          obscurePassword = !obscurePassword),
+                                      child: Icon(
+                                          obscurePassword
+                                              ? Icons.visibility_off_rounded
+                                              : Icons.visibility_rounded,
+                                          size: 20,
+                                          color: Theme.of(context)
+                                              .iconTheme
+                                              .color)),
+                                ),
+                                const SizedBox(height: 10),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    child: Text(
+                                      'Forgot Password?  ',
+                                      style: GoogleFonts.urbanist(
                                         textStyle: Theme.of(context)
                                             .textTheme
-                                            .bodySmall),
+                                            .bodySmall,
+                                      ),
+                                    ),
                                   ),
-                                )
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                          value: rememberMe,
+                                          onChanged: (bool? value) =>
+                                              setState(() {
+                                                rememberMe =
+                                                    value ?? rememberMe;
+                                              })),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Remember me',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const SB(height: 30),
+                                FilledButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStatePropertyAll(
+                                        Theme.of(context).colorScheme.primary),
+                                    fixedSize: MaterialStatePropertyAll(
+                                      Size(
+                                          MediaQuery.of(context).size.width *
+                                              0.85,
+                                          45),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if ((!isLoading) &&
+                                        (formKey.currentState?.validate() ??
+                                            false)) {
+                                      vm.dispatch(AuthAction(
+                                          type: AuthActionType.login,
+                                          payload: LoginPayload(
+                                            client: ref.read(dioProvider),
+                                            email: email!,
+                                            password: password!,
+                                            rememberMe: rememberMe,
+                                            onDone: (p0) {
+                                              setState(() {
+                                                popUp = PopUp(
+                                                    animation: controller,
+                                                    message:
+                                                        'You are logged in');
+                                                showPopUp(controller).then(
+                                                  (value) => Navigator.of(
+                                                          context)
+                                                      .popAndPushNamed('/home'),
+                                                );
+                                              });
+                                            },
+                                            onError: (p0) {
+                                              setState(() {
+                                                p0 as ({
+                                                  String message,
+                                                  AccessToken? token
+                                                });
+                                                popUp = PopUp(
+                                                    animation: controller,
+                                                    message: p0.message);
+                                                showPopUp(controller);
+                                              });
+                                            },
+                                          )));
+                                    }
+                                  },
+                                  child: vm.state.isLoading
+                                      ? SpinKitThreeInOut(
+                                          color: Colors.white, size: 20)
+                                      : Text(
+                                          'Login',
+                                          style: GoogleFonts.quicksand(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall,
+                                              color: const Color(0xFFFAF9F9),
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Don't have an account? ",
+                                      style: GoogleFonts.urbanist(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
+                                    ),
+                                    GestureDetector(
+                                      child: Text(
+                                        'Register',
+                                        style: GoogleFonts.urbanist(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontWeight: FontWeight.w600,
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      )),
-                ]),
+                          )),
+                    ]);
+              },
+              converter: (store) => _ViewModel(store),
+            ),
           ),
         ),
         if (popUp != null)
           Positioned(
-              bottom: 10,
+              top: 50,
               child: SizedBox(
                   width: MediaQuery.of(context).size.width, child: popUp!)),
       ],
@@ -302,3 +351,13 @@ class _InputField extends StatelessWidget {
 }
 
 typedef SB = SizedBox;
+
+class _ViewModel {
+  final Store<XgenriaState> _store;
+  final AuthState state;
+  _ViewModel(Store<XgenriaState> store)
+      : _store = store,
+        state = store.state.auth;
+
+  void dispatch(AuthAction action) => _store.dispatch(action);
+}

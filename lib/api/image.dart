@@ -20,7 +20,7 @@ abstract class ImageAPI {
   static Future<dynamic> createImage(
     Dio dio,
     AccessToken token, {
-    String name = '',
+    String name = 'Test Image',
     required String input,
     String style = '3D Render',
     String size = '1024x1024',
@@ -28,8 +28,9 @@ abstract class ImageAPI {
     try {
       final response = await dio.post(
           Uri.https(cfg.domain, '/image/create').toString(),
-          data: {},
+          data: {'name': name, 'input': input, 'style': style, 'size': size},
           options: Options(headers: {'Authorization': 'Bearer $token'}));
+      return response.data;
     } catch (e) {
       return e;
     }

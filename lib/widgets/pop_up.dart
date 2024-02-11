@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,15 +30,26 @@ class PopUp extends AnimatedWidget {
               width: MediaQuery.of(context).size.width * 0.9,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               decoration: BoxDecoration(
-                  color: Color(0xFF292929),
+                  color: Color(0xFFDD2222),
+                  gradient: LinearGradient(colors: [
+                    Colors.black,
+                    Theme.of(context).colorScheme.primary
+                  ]),
                   borderRadius: BorderRadius.circular(10)),
-              child: Text(message,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.quicksand(
-                    fontSize: 14,
-                    color: Colors.white,
-                    decoration: TextDecoration.none,
-                  )),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.info_rounded),
+                  const SizedBox(width: 8),
+                  Text(message,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                      )),
+                ],
+              ),
             )),
       ),
     );
