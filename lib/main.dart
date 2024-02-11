@@ -11,7 +11,10 @@ import 'package:xgenria/api/image.dart';
 import 'package:xgenria/models/image.dart';
 
 import 'package:xgenria/providers/providers.dart';
+import 'package:xgenria/redux/actions/base.dart';
+import 'package:xgenria/redux/actions/data_actions.dart';
 import 'package:xgenria/redux/core.dart';
+import 'package:xgenria/redux/reducers/data_reducer.dart';
 import 'package:xgenria/widgets/typing_text/ext.dart';
 
 import 'screens/screens.dart';
@@ -119,17 +122,25 @@ class _TestAPIState extends State<TestAPI> {
                           color: Color(0xFFCFCFCF),
                           decoration: TextDecoration.none,
                         )),
-                    // Text(data.toString()),
-                    Text(
-                        (data as List<dynamic>)
-                            .map((e) => ImageData.fromJson(e))
-                            .toList()
-                            .toString(),
+                    // Image.network(
+                    //   data.data['url'],
+                    //   width: 100,
+                    //   height: 100,
+                    // ),
+                    Text(data.runtimeType.toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Color(0xFFCFCFCF),
                           decoration: TextDecoration.none,
-                        )).animateTyping(autoPlay: true, secondsPerChar: 0.005),
+                        )),
+
+                    Text(
+                      vm.data.toString(),
+                      style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          decoration: TextDecoration.none,
+                          color: Colors.white),
+                    ),
                     // Text(vm.state.message ?? 'No message yet',
                     //     style: GoogleFonts.poppins(
                     //       fontSize: 16,
@@ -139,21 +150,36 @@ class _TestAPIState extends State<TestAPI> {
                     const SizedBox(height: 20),
                     FilledButton(
                       onPressed: () {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        ImageAPI.images(
-                          dio, vm.state.token!,
-                          // input: 'Image of a man under the rain',
-                        ).then((value) => setState(() {
-                              isLoading = false;
-                              data = value;
-                              response = value.runtimeType.toString();
-                            }));
+                        // setState(() {
+                        //   isLoading = true;
+                        // });
+                        // ImageAPI.images(
+                        //   dio, vm.auth.token!,
+                        //   // input: 'Image of a man under the rain',
+                        // ).then((value) => setState(() {
+                        //       isLoading = false;
+                        //       data = value;
+                        //       response = value.toString();
+                        //     }));
+                        // ImageAPI.createImage(dio, vm.auth.token!,
+                        //         input: 'A beautiful woman on red dress')
+                        //     .then((value) => setState(() {
+                        //           isLoading = false;
+                        //           response = value.toString();
+                        //           data = value;
+                        //         }));
+                        vm.dispatch(
+                          DataAction(
+                              type: DataActionType.fetchImages,
+                              payload: FetchImagePayload(
+                                client: dio,
+                                token: vm.auth.token!,
+                              )),
+                        );
                       },
                       child: Text('Press me'),
                     ),
-                    if (isLoading || vm.state.isLoading)
+                    if (isLoading || vm.data.isLoading)
                       SpinKitPulse(
                         color: Colors.purple,
                         size: 50,
@@ -170,11 +196,13 @@ class _TestAPIState extends State<TestAPI> {
 
 class _ViewModel {
   final Store<XgenriaState> _store;
-  final AuthState state;
+  final AuthState auth;
+  final DataState data;
 
   _ViewModel(Store<XgenriaState> store)
       : _store = store,
-        state = store.state.auth;
+        auth = store.state.auth,
+        data = store.state.data;
 
-  void dispatch(AuthAction action) => _store.dispatch(action);
+  void dispatch(XgenriaAction action) => _store.dispatch(action);
 }

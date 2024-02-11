@@ -1,18 +1,25 @@
 import 'package:redux/redux.dart';
-// import 'package:xgenria/providers/auth_provider.dart';
-import 'package:xgenria/redux/actions/base.dart';
-import 'package:xgenria/redux/reducers/auth_reducer.dart';
 
-import 'mware/auth.dart';
+import 'package:xgenria/redux/actions/base.dart';
+import 'package:xgenria/redux/mware/data_mware.dart';
+import 'reducers/auth_reducer.dart';
+import 'reducers/data_reducer.dart';
+
+import 'mware/auth_mware.dart';
 
 class XgenriaState {
   AuthState auth;
-  XgenriaState() : auth = AuthState();
+  DataState data;
+  XgenriaState()
+      : auth = AuthState(),
+        data = DataState();
 }
 
 XgenriaState reducer(XgenriaState state, action) {
   if (action is XgenriaAction) {
-    state.auth = authReducer(state.auth, action);
+    state
+      ..auth = authReducer(state.auth, action)
+      ..data = dataReducer(state.data, action);
   }
   return state;
 }
@@ -22,5 +29,6 @@ final store = Store<XgenriaState>(
   initialState: XgenriaState(),
   middleware: [
     authMiddleware,
+    imageMiddleware,
   ],
 );

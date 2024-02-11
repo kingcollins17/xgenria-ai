@@ -4,6 +4,8 @@ import 'package:redux/redux.dart';
 import 'package:xgenria/api/auth.dart';
 import 'package:xgenria/redux/actions/auth_actions.dart';
 
+import '../actions/base.dart';
+
 dynamic authMiddleware(Store store, action, NextDispatcher next) {
   if (action is AuthAction) {
     switch (action.type) {

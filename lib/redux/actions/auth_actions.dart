@@ -43,14 +43,4 @@ class LoginPayload extends Payload {
   });
 }
 
-class UpdatePayload<T> extends Payload {
-  final T data;
 
-  UpdatePayload(this.data);
-}
-
-class NotifyPayload extends Payload {
-  final String notification;
-
-  NotifyPayload({super.onDone, super.onError, required this.notification});
-}

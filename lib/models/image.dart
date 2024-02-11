@@ -42,7 +42,8 @@ class ImageData {
 
   @override
   String toString() =>
-      'ImageData{name: $name, image: $image, project: $projectId, '
+      'ImageData{id; $imageId, name: $name, image: $image, project: $projectId, '
+      'size: $size, input: $input'
       'user: $userId, artist: $artist, style: $style, lighting: '
       '$lighting, mood: $mood, }';
 }

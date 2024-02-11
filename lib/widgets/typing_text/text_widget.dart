@@ -79,8 +79,9 @@ class _TypingTextState extends State<TypingText>
 
   @override
   void dispose() {
-    super.dispose();
     if (widget.controller == null) controller.dispose();
+    super.dispose();
+    
   }
 
   void _runAnimation() {

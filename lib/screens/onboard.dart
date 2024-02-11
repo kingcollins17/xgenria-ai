@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xgenria/widgets/typing_text/ext.dart';
 
 class XOnboard extends StatefulWidget {
   const XOnboard({super.key});
@@ -240,7 +241,7 @@ class _OnboardContent extends StatelessWidget {
                       fontSize: 16,
                       color: Color(0xFFC9C9C9),
                       textStyle: Theme.of(context).textTheme.bodySmall,
-                    )),
+                    )).animateTyping(autoPlay: true, secondsPerChar: 0.02),
               ],
             ),
           ),
