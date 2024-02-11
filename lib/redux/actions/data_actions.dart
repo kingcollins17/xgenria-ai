@@ -13,8 +13,6 @@ enum DataActionType {
   fetchImages,
   notify,
 
-  createImage,
-
   ///requires UpdatePayload<List<ImageData>> as payload
   updateFetchedImages,
 
@@ -37,14 +35,3 @@ class FetchImagePayload extends Payload {
   });
 }
 
-class CreateImagePayload extends Payload {
-  final Dio client;
-  final AccessToken token;
-
-  CreateImagePayload({
-    super.onDone,
-    super.onError,
-    required this.client,
-    required this.token,
-  });
-}
