@@ -11,6 +11,11 @@ AuthState authReducer(AuthState state, XgenriaAction action) {
           ..isLoading = true
           ..message = 'Logging in...';
         break;
+      case AuthActionType.register:
+        state
+          ..isLoading = true
+          ..message = 'Registering account ...';
+        break;
       case AuthActionType.updateLogin:
         if (action.payload
             is UpdatePayload<({String message, AccessToken? token})>) {
@@ -25,7 +30,9 @@ AuthState authReducer(AuthState state, XgenriaAction action) {
       case AuthActionType.notify:
         if (action.payload is NotifyPayload) {
           final pd = action.payload as NotifyPayload;
-          state.message = pd.notification;
+          state
+            ..message = pd.notification
+            ..isLoading = false;
         }
         break;
       case AuthActionType.clear:

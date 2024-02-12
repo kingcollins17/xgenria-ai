@@ -36,31 +36,26 @@ class PopUp extends AnimatedWidget {
                     Theme.of(context).colorScheme.primary
                   ]),
                   borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.info_rounded),
-                  const SizedBox(width: 8),
-                  Text(message,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.white,
-                        decoration: TextDecoration.none,
-                      )),
-                ],
-              ),
+              child: Text(message,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.white,
+                    decoration: TextDecoration.none,
+                  )),
             )),
       ),
     );
   }
 }
 
-Future<dynamic> showPopUp(AnimationController controller) async {
+Future<dynamic> showPopUp(AnimationController controller,
+    {Duration delay = const Duration(seconds: 6)}) async {
   controller.reset();
-  controller.duration = Duration(milliseconds: 150);
+  controller.duration = Duration(milliseconds: 200);
   await controller.forward();
-  return Future.delayed(Duration(seconds: 4), () {
+  return Future.delayed(delay, () {
     return controller.reverse();
   });
 }

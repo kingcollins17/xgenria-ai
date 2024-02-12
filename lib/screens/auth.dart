@@ -12,6 +12,8 @@ import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/pop_up.dart';
 
+enum _FormType { login, register }
+
 class XAuth extends ConsumerStatefulWidget {
   const XAuth({super.key});
 
@@ -24,10 +26,12 @@ class _XAuthState extends ConsumerState<XAuth>
   final formKey = GlobalKey<FormState>();
   bool obscurePassword = false;
   bool isLoading = false;
-  String? email, password;
+  String? name, email, password, confirmedPassword;
   bool rememberMe = true;
 
   Widget? popUp;
+
+  var formType = _FormType.login;
   late AnimationController controller;
 
   @override
@@ -103,6 +107,17 @@ class _XAuthState extends ConsumerState<XAuth>
                                 const EdgeInsets.symmetric(horizontal: 20.0),
                             child: Column(
                               children: [
+                                
+                                if (formType == _FormType.register)
+                                  _InputField(
+                                    label: 'Name',
+                                    hint: 'Enter your name',
+                                    validator: (p0) => p0 == null || p0.isEmpty
+                                        ? "This field is required"
+                                        : null,
+                                    onChanged: (p0) => name = p0,
+                                  ),
+                                const SizedBox(height: 25),
                                 _InputField(
                                   label: 'Email Address',
                                   hint: 'Your email',
@@ -134,20 +149,47 @@ class _XAuthState extends ConsumerState<XAuth>
                                               .iconTheme
                                               .color)),
                                 ),
+                                if (formType == _FormType.register) ...[
+                                  const SizedBox(height: 25),
+                                  _InputField(
+                                    hint: 'Enter password again',
+                                    label: 'Confirm Password',
+                                    onChanged: (p0) => confirmedPassword = p0,
+                                    type: TextInputType.visiblePassword,
+                                    validator: (p0) => p0 == null || p0.isEmpty
+                                        ? "Confirm Password is required"
+                                        : password != confirmedPassword
+                                            ? "Confirm Password does not match"
+                                            : null,
+                                    obscureText: obscurePassword,
+                                    suffixIcon: GestureDetector(
+                                        onTap: () => setState(() =>
+                                            obscurePassword = !obscurePassword),
+                                        child: Icon(
+                                            obscurePassword
+                                                ? Icons.visibility_off_rounded
+                                                : Icons.visibility_rounded,
+                                            size: 20,
+                                            color: Theme.of(context)
+                                                .iconTheme
+                                                .color)),
+                                  ),
+                                ],
                                 const SizedBox(height: 10),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: GestureDetector(
-                                    child: Text(
-                                      'Forgot Password?  ',
-                                      style: GoogleFonts.urbanist(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall,
+                                if (formType == _FormType.login)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: GestureDetector(
+                                      child: Text(
+                                        'Forgot Password?  ',
+                                        style: GoogleFonts.urbanist(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Row(
@@ -160,12 +202,13 @@ class _XAuthState extends ConsumerState<XAuth>
                                                     value ?? rememberMe;
                                               })),
                                       const SizedBox(width: 4),
-                                      Text(
-                                        'Remember me',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                        ),
-                                      )
+                                      if (formType == _FormType.login)
+                                        Text(
+                                          'Remember me',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                          ),
+                                        )
                                     ],
                                   ),
                                 ),
@@ -224,7 +267,9 @@ class _XAuthState extends ConsumerState<XAuth>
                                       ? SpinKitThreeInOut(
                                           color: Colors.white, size: 20)
                                       : Text(
-                                          'Login',
+                                          formType == _FormType.login
+                                              ? 'Login'
+                                              : 'Sign up',
                                           style: GoogleFonts.quicksand(
                                               textStyle: Theme.of(context)
                                                   .textTheme
@@ -244,6 +289,11 @@ class _XAuthState extends ConsumerState<XAuth>
                                               .bodySmall),
                                     ),
                                     GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          formType = _FormType.register;
+                                        });
+                                      },
                                       child: Text(
                                         'Register',
                                         style: GoogleFonts.urbanist(

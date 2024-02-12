@@ -18,6 +18,9 @@ enum DataActionType {
 
   ///Marks a resource as dirtied. It requires UpdatePayload<DirtyResource>
   dirty,
+
+  ///
+  clean,
 }
 
 ///----------------------------------

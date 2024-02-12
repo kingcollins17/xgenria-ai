@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
 import 'package:xgenria/api/auth.dart';
+import 'package:xgenria/api/chat.dart';
 import 'package:xgenria/api/image.dart';
 import 'package:xgenria/models/image.dart';
 
@@ -63,7 +64,7 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       page = ImageScreen();
       break;
     case '/image-result':
-      page = ImageResult();
+      page = ImageResult(data: settings.arguments as ImageResultData);
       break;
 
     case '/ai-doc':
@@ -110,30 +111,18 @@ class _TestAPIState extends State<TestAPI> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 50),
-                    // Text(vm.state.toString(),
-                    //     style: GoogleFonts.poppins(
-                    //       fontSize: 16,
-                    //       color: Color(0xFFFFFFFF),
-                    //       decoration: TextDecoration.none,
-                    //     )),
-                    Text(response ?? 'No response yet',
+                    Text(vm.auth.toString() ?? 'No response yet',
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Color(0xFFCFCFCF),
                           decoration: TextDecoration.none,
                         )),
-                    // Image.network(
-                    //   data.data['url'],
-                    //   width: 100,
-                    //   height: 100,
-                    // ),
-                    Text(data.runtimeType.toString(),
+                    Text(data.toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Color(0xFFCFCFCF),
                           decoration: TextDecoration.none,
                         )),
-
                     Text(
                       vm.data.toString(),
                       style: GoogleFonts.poppins(
@@ -141,41 +130,18 @@ class _TestAPIState extends State<TestAPI> {
                           decoration: TextDecoration.none,
                           color: Colors.white),
                     ),
-                    // Text(vm.state.message ?? 'No message yet',
-                    //     style: GoogleFonts.poppins(
-                    //       fontSize: 16,
-                    //       color: Color(0xFFFFFFFF),
-                    //       decoration: TextDecoration.none,
-                    //     )),
                     const SizedBox(height: 20),
                     FilledButton(
                       onPressed: () {
-                        // setState(() {
-                        //   isLoading = true;
-                        // });
-                        // ImageAPI.images(
-                        //   dio, vm.auth.token!,
-                        //   // input: 'Image of a man under the rain',
-                        // ).then((value) => setState(() {
-                        //       isLoading = false;
-                        //       data = value;
-                        //       response = value.toString();
-                        //     }));
-                        // ImageAPI.createImage(dio, vm.auth.token!,
-                        //         input: 'A beautiful woman on red dress')
-                        //     .then((value) => setState(() {
-                        //           isLoading = false;
-                        //           response = value.toString();
-                        //           data = value;
-                        //         }));
-                        vm.dispatch(
-                          DataAction(
-                              type: DataActionType.fetchImages,
-                              payload: FetchImagePayload(
+                        vm.dispatch(AuthAction(
+                          type: AuthActionType.register,
+                          payload: RegistrationPayload(
                                 client: dio,
-                                token: vm.auth.token!,
-                              )),
-                        );
+                              name: 'Anna Doe',
+                              email: 'anna@gmail.com',
+                              password: 'password',
+                              confirmedPassword: 'password'),
+                        ));
                       },
                       child: Text('Press me'),
                     ),

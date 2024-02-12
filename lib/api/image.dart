@@ -33,6 +33,7 @@ abstract class ImageAPI {
     String? lighting,
     String? mood,
     String? artist,
+    int variants = 1,
   }) async {
     try {
       final response =
@@ -44,7 +45,8 @@ abstract class ImageAPI {
                 'size': size,
                 'lighting': lighting,
                 'artist': artist,
-                'mood': mood
+                'mood': mood,
+                'variants': variants
               },
               options: Options(headers: {'Authorization': 'Bearer $token'}));
 

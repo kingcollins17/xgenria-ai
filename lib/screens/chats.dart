@@ -203,7 +203,7 @@ class _CreateChatState extends ConsumerState<CreateChat> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'AI Chats',
+                'Create an AI Chat',
                 style: GoogleFonts.poppins(
                   fontSize: 18,
                 ),
@@ -213,19 +213,46 @@ class _CreateChatState extends ConsumerState<CreateChat> {
             Image.asset('asset/images/icon-6.png', width: 150, height: 150),
             Align(
               alignment: Alignment.centerLeft,
-              child: Text('Name'),
+              child: Text('Chat Name'),
             ),
             const SizedBox(height: 10),
             TextField(
               decoration: InputDecoration(
                 isDense: true,
-                border: OutlineInputBorder(
+                border: UnderlineInputBorder(
                     borderSide: BorderSide(
                   color: Color(0xFFC7C7C7),
                 )),
               ),
             ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Project',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+            ),
+            
             const SizedBox(height: 10),
+            DropdownButtonFormField(
+              value: 1,
+              items: [
+                DropdownMenuItem(
+                  value: 1,
+                  child: Text(
+                    'Project 1',
+                    style: GoogleFonts.quicksand(fontSize: 14),
+                  ),
+                ),
+                DropdownMenuItem(
+                  value: 2,
+                  child: Text('Project 2',
+                      style: GoogleFonts.quicksand(fontSize: 14)),
+                )
+              ],
+              onChanged: (value) {},
+            ),
             Expanded(
                 child: Align(
               alignment: Alignment.bottomCenter,

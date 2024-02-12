@@ -7,7 +7,7 @@ part 'providers.g.dart';
 
 @riverpod
 Dio dio(DioRef ref) {
-  final sx = [200, 400, 401, 403, 422, 404];
+  final sx = [301, 200, 400, 401, 403, 422, 404];
   return Dio(BaseOptions(validateStatus: (status) => sx.contains(status)));
 }
 

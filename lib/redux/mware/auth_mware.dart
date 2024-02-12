@@ -9,6 +9,30 @@ import '../actions/base.dart';
 dynamic authMiddleware(Store store, action, NextDispatcher next) {
   if (action is AuthAction) {
     switch (action.type) {
+      case AuthActionType.register:
+        if (action.payload is RegistrationPayload) {
+          final pd = action.payload as RegistrationPayload;
+          AuthAPI.register(pd.client,
+                  name: pd.name,
+                  email: pd.email,
+                  password: pd.password,
+                  confirmedPassword: pd.confirmedPassword)
+              .then((value) {
+            store.dispatch(
+              AuthAction(
+                type: AuthActionType.notify,
+                payload: NotifyPayload(notification: value.message),
+              ),
+            );
+            if (value.status && pd.onDone != null) {
+              pd.onDone!(value);
+            } else if ((!value.status) && pd.onError != null) {
+              pd.onError!(value);
+            }
+          });
+        }
+        break;
+
       case AuthActionType.login:
         if (action.payload is LoginPayload) {
           final pd = action.payload as LoginPayload;

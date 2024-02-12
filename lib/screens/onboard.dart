@@ -241,7 +241,7 @@ class _OnboardContent extends StatelessWidget {
                       fontSize: 16,
                       color: Color(0xFFC9C9C9),
                       textStyle: Theme.of(context).textTheme.bodySmall,
-                    )).animateTyping(autoPlay: true, secondsPerChar: 0.02),
+                    )),
               ],
             ),
           ),

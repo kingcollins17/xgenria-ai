@@ -2,6 +2,13 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'image.g.dart';
 
+
+typedef ImageResultData = ({
+  Map<String, dynamic>? data,
+  String message,
+  bool status
+});
+
 @JsonSerializable()
 class ImageData {
   @JsonKey(name: 'image_id')

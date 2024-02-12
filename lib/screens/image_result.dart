@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xgenria/models/image.dart';
 
 class ImageResult extends ConsumerStatefulWidget {
-  const ImageResult({super.key});
+  const ImageResult({super.key, required this.data});
+  final ImageResultData data;
   @override
   ConsumerState<ImageResult> createState() => _ImageResultState();
 }
@@ -14,6 +16,7 @@ class ImageResult extends ConsumerStatefulWidget {
 class _ImageResultState extends ConsumerState<ImageResult> {
   @override
   Widget build(BuildContext context) {
+    // final data = ModalRoute.of(context)?.settings.arguments as ImageResultData;
     return Scaffold(
       appBar: AppBar(),
       body: SizedBox(
@@ -23,11 +26,12 @@ class _ImageResultState extends ConsumerState<ImageResult> {
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.6,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(
-                  image: AssetImage('asset/images/onboard-1.jpg'),
-                  fit: BoxFit.cover,
-                )),
+                borderRadius: BorderRadius.circular(8)),
+            clipBehavior: Clip.antiAlias,
+            child: Image.network(
+              widget.data.data!['url'],
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(height: 10),
           Padding(

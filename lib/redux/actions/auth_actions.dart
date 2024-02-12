@@ -11,6 +11,7 @@ base class AuthAction extends XgenriaAction {
 
 ///The different types of actions
 enum AuthActionType {
+  ///Requires RegistrationPayload
   register,
 
   ///requires [LoginPayload]
@@ -27,7 +28,25 @@ enum AuthActionType {
   updateLogin,
 }
 
+class RegistrationPayload extends Payload {
+  final Dio client;
+  final String name;
+  final String email;
+  final String password;
+  final String confirmedPassword;
+
+  RegistrationPayload(
+      {required this.client,
+      super.onDone,
+      super.onError,
+      required this.name,
+      required this.email,
+      required this.password,
+      required this.confirmedPassword});
+}
+
 ///LoginPayload
+
 class LoginPayload extends Payload {
   final String email, password;
   final bool rememberMe;
@@ -42,5 +61,3 @@ class LoginPayload extends Payload {
     required this.rememberMe,
   });
 }
-
-

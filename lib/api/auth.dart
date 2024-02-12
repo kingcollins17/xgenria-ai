@@ -3,6 +3,9 @@ import '../models/access_token.dart';
 import '../models/user_data.dart';
 import '_config.dart' as cfg;
 
+
+typedef RegisterResponse = ({String message, bool status});
+
 abstract class AuthAPI {
   static Future<dynamic> user(Dio dio, AccessToken token) async {
     try {
@@ -14,6 +17,33 @@ abstract class AuthAPI {
       return (err.toString(), err.stackTrace);
     } catch (e) {
       return e;
+    }
+  }
+
+
+  static Future<RegisterResponse> register(
+    Dio dio, {
+    required String name,
+    required String email,
+    required String password,
+    required String confirmedPassword,
+  }) async {
+    try {
+      final response = await dio.post(
+        Uri.https(cfg.domain, '/auth/register').toString(),
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          'password_confirmation': confirmedPassword,
+        },
+      );
+      return (
+        status: response.statusCode == 200,
+        message: response.data['message'].toString()
+      );
+    } catch (e) {
+      return (status: false, message: e.toString());
     }
   }
 
