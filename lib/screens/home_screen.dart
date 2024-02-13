@@ -2,9 +2,12 @@
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:redux/redux.dart';
+import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/screens/explore_screen.dart';
 import 'package:xgenria/screens/profile_screen.dart';
 import 'package:xgenria/screens/projects.dart';
@@ -52,7 +55,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: destination == HoverDestination.home
                 ? IndexPage()
                 : destination == HoverDestination.explore
-                    ? ExplorePage()
+                    ? StoreConnector<XgenriaState, _ViewModel>(
+                        converter: (store) => _ViewModel(store),
+                        builder: (context, vm) {
+                          return ExplorePage(token: vm.auth.token!);
+                        })
                     : destination == HoverDestination.projects
                         ? XProject()
                         : ProfilePage(),
@@ -71,4 +78,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
+}
+
+
+class _ViewModel {
+  final Store<XgenriaState> _store;
+  final AuthState auth;
+  _ViewModel(Store<XgenriaState> store)
+      : _store = store,
+        auth = store.state.auth;
+  void dispatch(action) => _store.dispatch(action);
 }

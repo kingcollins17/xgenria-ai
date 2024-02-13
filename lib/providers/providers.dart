@@ -11,15 +11,15 @@ Dio dio(DioRef ref) {
   return Dio(BaseOptions(validateStatus: (status) => sx.contains(status)));
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<TemplateResponse> templates(TemplatesRef ref, AccessToken token) async {
-  final dioClient = ref.watch(dioProvider);
+  final dioClient = ref.read(dioProvider);
   return DashboardAPI.templates(dioClient, token);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<DashboardResponse> dashboard(DashboardRef ref, AccessToken token) async {
-  final dioClient = ref.watch(dioProvider);
+  final dioClient = ref.read(dioProvider);
   return DashboardAPI.dashboard(dioClient, token);
 }
 

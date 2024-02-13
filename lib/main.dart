@@ -6,21 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
-import 'package:xgenria/api/auth.dart';
-import 'package:xgenria/api/chat.dart';
-import 'package:xgenria/api/image.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/models/chat.dart';
-import 'package:xgenria/models/image.dart';
 
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/actions/base.dart';
 import 'package:xgenria/redux/actions/data_actions.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/redux/reducers/data_reducer.dart';
-import 'package:xgenria/widgets/typing_text/ext.dart';
 
-import 'screens/chat_dm.dart';
+import 'models/models.dart';
 import 'screens/screens.dart';
 import 'theme.dart';
 
@@ -79,7 +72,9 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       break;
     case '/create-docs':
     case '/create-doc':
-      page = CreateDocument();
+      if (settings.arguments is Template) {
+        page = CreateDocument(template: settings.arguments as Template);
+      }
       break;
     case '/test':
       page = TestAPI();

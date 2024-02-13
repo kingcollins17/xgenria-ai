@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xgenria/models/models.dart';
+import 'package:xgenria/providers/providers.dart';
 
 class AIDocuments extends ConsumerStatefulWidget {
   const AIDocuments({super.key});
@@ -108,21 +110,26 @@ class _AIDocumentsState extends ConsumerState<AIDocuments> {
 }
 
 class CreateDocument extends ConsumerStatefulWidget {
-  const CreateDocument({super.key});
+  const CreateDocument({super.key, required this.template});
+  final Template template;
   @override
   ConsumerState<CreateDocument> createState() => _CreateDocumentState();
 }
 
 class _CreateDocumentState extends ConsumerState<CreateDocument> {
-  final category = (
-    'asset/images/icon-1.png',
-    'Coding Explanator',
-    ['Python', 'C++', 'Javascript', 'C#', 'Go']
-  );
+  late TemplateCategory category;
   final languages = ['English', 'French', 'Spanish', 'Chinese', 'German'];
   int currentTemplateIndex = 0;
   int variants = 1;
   int creativity = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    // // category =
+    // ref.watch(templatesProvider).
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,12 +151,12 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
-                category.$1,
+                'category\$1,',
                 width: 60,
                 height: 60,
               ),
               Text(
-                category.$2,
+                'category.\$2',
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -159,7 +166,8 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
                 height: 70,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: category.$3.length,
+                  // itemCount: category.$3.length,
+                  itemCount: 3,
                   itemBuilder: (context, index) => Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -179,7 +187,8 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
                                   : Color(0xFF3A3A3A)),
                           duration: Duration(milliseconds: 500),
                           child: Text(
-                            category.$3[index],
+                            // category.$3[index],
+                            '',
                             style: TextStyle(fontSize: 14),
                           ),
                         ),
