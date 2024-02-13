@@ -40,13 +40,13 @@ class IndexPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Features',
-                style: GoogleFonts.poppins(),
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.centerLeft,
+            //   child: Text(
+            //     'Features',
+            //     style: GoogleFonts.poppins(),
+            //   ),
+            // ),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
@@ -160,81 +160,6 @@ class IndexPage extends StatelessWidget {
                       )),
             ),
             const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Available Projects',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text('see all',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ))
-              ],
-            ),
-            SizedBox(
-              height: 150,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: List.generate(
-                    4,
-                    (index) => Center(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Color(0xFF272727)),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              
-                                              border: Border.all(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            Icons.folder_rounded,
-                                            size: 10,
-                                            color: Colors.grey,
-                                          ),
-                                        )),
-                                    Text(
-                                      'My AI Project',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    Text(
-                                      '10 items',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        )),
-              ),
-            ),
             const SizedBox(height: 100),
           ],
         ),

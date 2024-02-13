@@ -25,12 +25,38 @@ class _ImageResultState extends ConsumerState<ImageResult> {
           Container(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.6,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             clipBehavior: Clip.antiAlias,
             child: Image.network(
               widget.data.data!['url'],
-              fit: BoxFit.cover,
+              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) =>
+                  child,
+              loadingBuilder: (context, child, loadingProgress) {
+                return loadingProgress == null
+                    ? child
+                    : Center(
+                        child: SizedBox(
+                          height: 25,
+                          width: 25,
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.primary,
+                            strokeWidth: 2,
+                            value: (loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!),
+                          ),
+                        ),
+                      );
+              },
+              errorBuilder: (context, error, stackTrace) => Center(
+                child: TextButton(
+                    onPressed: () => setState(() {}),
+                    child: Text(
+                      'Reload',
+                      style: GoogleFonts.quicksand(
+                          fontSize: 16, color: Colors.white),
+                    )),
+              ),
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 10),

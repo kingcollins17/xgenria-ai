@@ -10,27 +10,40 @@ base class DataAction extends XgenriaAction {
 }
 
 enum DataActionType {
+
+
+  ///requires a NetworkFetchPayload
   fetchImages,
+  
+  ///requires a NetworkFetchPayload
+  fetchChats,
   notify,
 
   ///requires UpdatePayload<List<ImageData>> as payload
   updateFetchedImages,
 
+  ///requires UpdatePayload<List<ChatData>> as payload
+  updateFetchedChats,
+
   ///Marks a resource as dirtied. It requires UpdatePayload<DirtyResource>
   dirty,
 
-  ///
+  ///remove a DirtyResource from dirtied
   clean,
+
+
+  ///reset this whole state
+  reset,
 }
 
 ///----------------------------------
 ///
 ///----------------------------------
-class FetchImagePayload extends Payload {
+class NetworkFetchPayload extends Payload {
   final Dio client;
   final AccessToken token;
 
-  FetchImagePayload({
+  NetworkFetchPayload({
     super.onDone,
     super.onError,
     required this.client,

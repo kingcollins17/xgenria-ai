@@ -11,6 +11,13 @@ typedef FetchChatResponse = ({
   bool status
 });
 
+typedef TalkResponse = ({ChatBubbleData? data, bool status, String message});
+typedef FetchMessageResponse = ({
+  List<ChatBubbleData>? data,
+  String message,
+  bool status
+});
+
 abstract class ChatAPI {
   static Future<FetchChatResponse> chats(Dio dio, AccessToken token) async {
     try {
@@ -35,17 +42,45 @@ abstract class ChatAPI {
     }
   }
 
-  static Future<dynamic> talk(Dio dio, AccessToken token,
+  static Future<FetchMessageResponse> messages(Dio dio, AccessToken token,
+      {required int chatId}) async {
+    try {
+      final response = await dio.get(
+          Uri.https(cfg.domain, '/chat/$chatId/messages').toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      return (
+        status: response.statusCode == 200,
+        message: response.data['message'].toString(),
+        data: response.statusCode == 200
+            ? (response.data['data'] as List<dynamic>)
+                .map((e) => ChatBubbleData.fromJson(e))
+                .toList()
+            : null
+      );
+    } catch (e) {
+      return (status: false, data: null, message: e.toString());
+    }
+  }
+
+  static Future<TalkResponse> talk(Dio dio, AccessToken token,
       {required int chatId, required String content}) async {
     try {
       final response = await dio.post(
-          Uri.http(cfg.domain, '/chat/$chatId/talk').toString(),
+          Uri.https(cfg.domain, '/chat/$chatId/talk').toString(),
           data: {'content': content},
           options: Options(headers: {'Authorization': 'Bearer $token'}));
 
-      return response.data;
+      return (
+        status: response.statusCode == 200,
+        message: response.data['message'].toString(),
+        data: response.statusCode == 200
+            ? ChatBubbleData.fromJson(response.data['data'])
+            : null
+      );
+      // return response.data;
     } catch (e) {
-      return e;
+      return (status: false, data: null, message: e.toString());
     }
   }
 

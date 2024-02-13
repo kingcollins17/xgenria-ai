@@ -5,3 +5,5 @@ export 'doc.dart';
 export 'project.dart';
 export 'template.dart';
 export 'user_data.dart';
+export 'chat.dart';
+export 'image.dart';

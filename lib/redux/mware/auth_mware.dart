@@ -2,11 +2,11 @@
 
 import 'package:redux/redux.dart';
 import 'package:xgenria/api/auth.dart';
-import 'package:xgenria/redux/actions/auth_actions.dart';
+import 'package:xgenria/redux/core.dart';
 
 import '../actions/base.dart';
 
-dynamic authMiddleware(Store store, action, NextDispatcher next) {
+dynamic authMiddleware(Store<XgenriaState> store, action, NextDispatcher next) {
   if (action is AuthAction) {
     switch (action.type) {
       case AuthActionType.register:
@@ -27,7 +27,7 @@ dynamic authMiddleware(Store store, action, NextDispatcher next) {
             if (value.status && pd.onDone != null) {
               pd.onDone!(value);
             } else if ((!value.status) && pd.onError != null) {
-              pd.onError!(value);
+              pd.onError!(value.message);
             }
           });
         }

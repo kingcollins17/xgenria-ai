@@ -9,6 +9,8 @@ import 'package:redux/redux.dart';
 import 'package:xgenria/api/auth.dart';
 import 'package:xgenria/api/chat.dart';
 import 'package:xgenria/api/image.dart';
+import 'package:xgenria/models/access_token.dart';
+import 'package:xgenria/models/chat.dart';
 import 'package:xgenria/models/image.dart';
 
 import 'package:xgenria/providers/providers.dart';
@@ -18,6 +20,7 @@ import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/redux/reducers/data_reducer.dart';
 import 'package:xgenria/widgets/typing_text/ext.dart';
 
+import 'screens/chat_dm.dart';
 import 'screens/screens.dart';
 import 'theme.dart';
 
@@ -55,7 +58,10 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       page = ChatList();
       break;
     case '/chatbox':
-      page = ChatBox();
+      if (settings.arguments is (ChatData, AccessToken)) {
+        final args = settings.arguments as (ChatData, AccessToken);
+        page = ChatDM(chat: args.$1, token: args.$2);
+      }
       break;
     case '/create-chat':
       page = CreateChat();
@@ -111,12 +117,12 @@ class _TestAPIState extends State<TestAPI> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 50),
-                    Text(vm.auth.toString() ?? 'No response yet',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Color(0xFFCFCFCF),
-                          decoration: TextDecoration.none,
-                        )),
+                    // Text(vm.data.toString() ?? 'No response yet',
+                    //     style: GoogleFonts.poppins(
+                    //       fontSize: 16,
+                    //       color: Color(0xFFCFCFCF),
+                    //       decoration: TextDecoration.none,
+                    //     )),
                     Text(data.toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
@@ -133,15 +139,25 @@ class _TestAPIState extends State<TestAPI> {
                     const SizedBox(height: 20),
                     FilledButton(
                       onPressed: () {
-                        vm.dispatch(AuthAction(
-                          type: AuthActionType.register,
-                          payload: RegistrationPayload(
-                                client: dio,
-                              name: 'Anna Doe',
-                              email: 'anna@gmail.com',
-                              password: 'password',
-                              confirmedPassword: 'password'),
-                        ));
+                        setState(() {
+                          isLoading = true;
+                        });
+                        // ChatAPI.messages(
+                        //   dio,
+                        //   vm.auth.token!,
+                        //   chatId: 20,
+                        //   // content: 'Hello there',
+                        // ).then((value) => setState(() {
+                        //       isLoading = false;
+                        //       response = value.toString();
+                        //       data = value;
+                        //     }));
+                        vm.dispatch(
+                          DataAction(
+                              type: DataActionType.reset,
+                              payload: NetworkFetchPayload(
+                                  client: dio, token: vm.auth.token!)),
+                        );
                       },
                       child: Text('Press me'),
                     ),

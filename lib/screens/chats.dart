@@ -1,22 +1,35 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:redux/redux.dart';
+import 'package:xgenria/providers/providers.dart';
+import 'package:xgenria/redux/actions/base.dart';
+import 'package:xgenria/redux/actions/data_actions.dart';
+import 'package:xgenria/redux/core.dart';
+
+import '../models/models.dart';
+import '../redux/reducers/data_reducer.dart';
 
 class ChatList extends ConsumerStatefulWidget {
-  const ChatList({super.key});
+  const ChatList({
+    super.key,
+  });
   @override
   ConsumerState<ChatList> createState() => _ChatListState();
 }
 
 class _ChatListState extends ConsumerState<ChatList> {
   final filters = <(String, int)>[
-    ('Active', 12),
-    ('Work', 7),
-    ('Fun', 4),
-    ('Archived', 34)
+    ('All', 10),
+    // ('Active', 12),
+    // ('Work', 7),
+    // ('Fun', 4),
+    // ('Archived', 34)
   ];
   final chats = [
     'The importance of Art: A conversation with ChatGPT',
@@ -74,7 +87,7 @@ class _ChatListState extends ConsumerState<ChatList> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -85,67 +98,160 @@ class _ChatListState extends ConsumerState<ChatList> {
                   Icon(Icons.search_rounded, size: 20, color: Color(0xFFCACACA))
                 ],
               ),
-              SizedBox(
-                height: 60,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: filters.length,
-                  itemBuilder: (context, index) => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        decoration: BoxDecoration(
-                            color: selectedFilterIndex == index
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(4)),
-                        child: Row(
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  height: 30,
+                  width: 70,
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(4)),
+                  child: StoreConnector<XgenriaState, _ViewModel>(
+                      converter: (store) => _ViewModel(store),
+                      builder: (context, vm) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              filters[index].$1,
+                              'Total',
                               style: GoogleFonts.quicksand(
                                   fontSize: 14, color: Colors.white),
                             ),
                             const SizedBox(width: 3),
-                            Text(
-                              filters[index].$2.toString(),
-                              style: GoogleFonts.quicksand(
+                            Text(vm.data.chats.length.toString(),
+                                style: GoogleFonts.quicksand(
                                   fontSize: 12,
-                                  color: selectedFilterIndex == index
-                                      ? Colors.white
-                                      : Colors.grey),
-                            )
+                                  color: Colors.white,
+                                ))
                           ],
-                        ),
-                      ),
-                    ),
-                  ),
+                        );
+                      }),
                 ),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.75,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: ListView.builder(
-                    itemCount: chats.length,
-                    itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                        decoration: BoxDecoration(
-                          color: Color(0xFF2B2B2B),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(chats[index]),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              StoreConnector<XgenriaState, _ViewModel>(
+                  converter: (store) => _ViewModel(store),
+                  builder: (context, vm) {
+                    if (vm.data.chats.isEmpty ||
+                        vm.data.dirtied.contains(DirtyResource.chats)) {
+                      vm.dispatch(DataAction(
+                          type: DataActionType.fetchChats,
+                          payload: NetworkFetchPayload(
+                              client: ref.read(dioProvider),
+                              token: vm.auth.token!)));
+                    }
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      // height: MediaQuery.of(context).size.height * 0.85,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                          child: vm.data.isLoading
+                              ? Center(
+                                  child: SpinKitRipple(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      size: 40),
+                                )
+                              : vm.data.chats.isEmpty
+                                  ? Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 20.0),
+                                        child: Text(
+                                          'You do not have any chats yet',
+                                          style: GoogleFonts.quicksand(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ))
+                                  : Column(
+                                      children: List.generate(
+                                        vm.data.chats.length,
+                                        (index) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: GestureDetector(
+                                            onTap: () =>
+                                                Navigator.of(context).pushNamed(
+                                              '/chatbox',
+                                              arguments: (
+                                                vm.data.chats[index],
+                                                vm.auth.token!
+                                              ),
+                                            ),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 5, vertical: 10),
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFF111111),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Color(0xFF141414),
+                                                    offset: Offset(1, 4),
+                                                    blurRadius: 4,
+                                                  )
+                                                ],
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.all(8),
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        )),
+                                                    child: Icon(
+                                                      Icons.chat_bubble_rounded,
+                                                      size: 10,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        vm.data.chats[index]
+                                                            .name,
+                                                        style: GoogleFonts
+                                                            .quicksand(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                      ),
+                                                      Text(
+                                                        '${vm.data.chats[index].totalMessages} messages',
+                                                        style: GoogleFonts
+                                                            .quicksand(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )),
+                    );
+                  }),
             ],
           ),
         ),
@@ -177,6 +283,17 @@ class _ChatListState extends ConsumerState<ChatList> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
+}
+
+class _ViewModel {
+  final Store<XgenriaState> _store;
+  final DataState data;
+  final AuthState auth;
+  _ViewModel(Store<XgenriaState> store)
+      : _store = store,
+        data = store.state.data,
+        auth = store.state.auth;
+  void dispatch(XgenriaAction action) => _store.dispatch(action);
 }
 
 class CreateChat extends ConsumerStatefulWidget {
@@ -233,7 +350,6 @@ class _CreateChatState extends ConsumerState<CreateChat> {
                 style: GoogleFonts.poppins(fontSize: 16),
               ),
             ),
-            
             const SizedBox(height: 10),
             DropdownButtonFormField(
               value: 1,
@@ -282,182 +398,6 @@ class _CreateChatState extends ConsumerState<CreateChat> {
           ]),
         ),
       ),
-    );
-  }
-}
-
-class ChatBox extends ConsumerStatefulWidget {
-  const ChatBox({super.key});
-  @override
-  ConsumerState<ChatBox> createState() => _ChatBoxState();
-}
-
-class _ChatBoxState extends ConsumerState<ChatBox> {
-  final chats = [
-    ('Hello, how can I be assist you Today?', true),
-    ('How can i make a sweet margarita in under 5 mins', false),
-    (
-      'In order to make a sweet margarita in under five minutes'
-          'here a few tips: You need to prepare your juice and keep'
-          'Squeeze the lemon out of the fruits and make the tray bald ...',
-      true
-    ),
-    ('How can i make a sweet margarita in under 5 mins', false),
-    (
-      'In order to make a sweet margarita in under five minutes'
-          'here a few tips: You need to prepare your juice and keep'
-          'Squeeze the lemon out of the fruits and make the tray bald ...',
-      true
-    ),
-    ('Thank you, that was helpful', false),
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(children: [
-          SvgPicture.asset(
-            'asset/images/logo.svg',
-            width: 30,
-            height: 30,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'XGenria Chat 1.0',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                ),
-              ),
-              Text(
-                DateTime.now().toString().split(' ').first,
-                style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          )
-        ]),
-      ),
-      body: Stack(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.9,
-            child: ListView.builder(
-              itemCount: chats.length,
-              itemBuilder: (context, index) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15),
-                child: Align(
-                  alignment: chats[index].$2
-                      ? Alignment.centerLeft
-                      : Alignment.centerRight,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (chats[index].$2)
-                          Image.asset(
-                            'asset/images/icon-6.png',
-                            width: 30,
-                            height: 30,
-                            // color: Theme.of(context).colorScheme.primary,
-                          ),
-                        const SizedBox(width: 4),
-                        Column(
-                          crossAxisAlignment: chats[index].$2
-                              ? CrossAxisAlignment.start
-                              : CrossAxisAlignment.end,
-                          children: [
-                            Container(
-                              constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width * 0.65),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: chats[index].$2
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Color(0xFF303030),
-                              ),
-                              child: Text(
-                                chats[index].$1,
-                                style: GoogleFonts.quicksand(fontSize: 16),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                DateTime.now()
-                                    .toString()
-                                    .split(' ')
-                                    .last
-                                    .split(':')
-                                    .sublist(0, 2)
-                                    .join(':')
-                                    .toString(),
-                                style: GoogleFonts.quicksand(
-                                    fontSize: 14, color: Color(0xFFD1D1D1)),
-                              ),
-                            )
-                          ],
-                        ),
-                        if (!chats[index].$2)
-                          SvgPicture.asset(
-                            'asset/svgs/undraw_pic_profile_re_7g2h.svg',
-                            width: 30,
-                            height: 30,
-                          )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-              bottom: 0,
-              child: Center(
-                child: Container(
-                  // height: 80,
-                  constraints: BoxConstraints(minHeight: 80),
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF1A1A1A),
-                  ),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          minLines: 1,
-                          maxLines: 4,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Ask me anything',
-                              hintStyle: GoogleFonts.quicksand(
-                                  fontSize: 16, color: Color(0xFFB6B6B6))),
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Icon(
-                        Icons.send_rounded,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 25,
-                      )
-                    ],
-                  ),
-                ),
-              ))
-        ],
-      ),
-      endDrawer: Container(),
     );
   }
 }

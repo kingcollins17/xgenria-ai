@@ -107,7 +107,6 @@ class _XAuthState extends ConsumerState<XAuth>
                                 const EdgeInsets.symmetric(horizontal: 20.0),
                             child: Column(
                               children: [
-                                
                                 if (formType == _FormType.register)
                                   _InputField(
                                     label: 'Name',
@@ -190,28 +189,28 @@ class _XAuthState extends ConsumerState<XAuth>
                                       ),
                                     ),
                                   ),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Row(
-                                    children: [
-                                      Checkbox(
-                                          value: rememberMe,
-                                          onChanged: (bool? value) =>
-                                              setState(() {
-                                                rememberMe =
-                                                    value ?? rememberMe;
-                                              })),
-                                      const SizedBox(width: 4),
-                                      if (formType == _FormType.login)
+                                if (formType == _FormType.login)
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Row(
+                                      children: [
+                                        Checkbox(
+                                            value: rememberMe,
+                                            onChanged: (bool? value) =>
+                                                setState(() {
+                                                  rememberMe =
+                                                      value ?? rememberMe;
+                                                })),
+                                        const SizedBox(width: 4),
                                         Text(
                                           'Remember me',
                                           style: GoogleFonts.poppins(
                                             fontSize: 14,
                                           ),
                                         )
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
                                 const SB(height: 30),
                                 FilledButton(
                                   style: ButtonStyle(
@@ -228,39 +227,7 @@ class _XAuthState extends ConsumerState<XAuth>
                                     if ((!isLoading) &&
                                         (formKey.currentState?.validate() ??
                                             false)) {
-                                      vm.dispatch(AuthAction(
-                                          type: AuthActionType.login,
-                                          payload: LoginPayload(
-                                            client: ref.read(dioProvider),
-                                            email: email!,
-                                            password: password!,
-                                            rememberMe: rememberMe,
-                                            onDone: (p0) {
-                                              setState(() {
-                                                popUp = PopUp(
-                                                    animation: controller,
-                                                    message:
-                                                        'You are logged in');
-                                                showPopUp(controller).then(
-                                                  (value) => Navigator.of(
-                                                          context)
-                                                      .popAndPushNamed('/home'),
-                                                );
-                                              });
-                                            },
-                                            onError: (p0) {
-                                              setState(() {
-                                                p0 as ({
-                                                  String message,
-                                                  AccessToken? token
-                                                });
-                                                popUp = PopUp(
-                                                    animation: controller,
-                                                    message: p0.message);
-                                                showPopUp(controller);
-                                              });
-                                            },
-                                          )));
+                                      handleSubmit(vm, context);
                                     }
                                   },
                                   child: vm.state.isLoading
@@ -278,35 +245,46 @@ class _XAuthState extends ConsumerState<XAuth>
                                               fontWeight: FontWeight.w500),
                                         ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Don't have an account? ",
-                                      style: GoogleFonts.urbanist(
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      formType = formType == _FormType.login
+                                          ? _FormType.register
+                                          : _FormType.login;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          formType == _FormType.login
+                                              ? "Don't have an account? "
+                                              : "Already have an account?",
+                                          style: GoogleFonts.urbanist(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall),
+                                        ),
+                                        Text(
+                                          formType == _FormType.login
+                                              ? ' Register'
+                                              : ' Login',
+                                          style: GoogleFonts.urbanist(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              fontWeight: FontWeight.w600,
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall),
+                                        )
+                                      ],
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          formType = _FormType.register;
-                                        });
-                                      },
-                                      child: Text(
-                                        'Register',
-                                        style: GoogleFonts.urbanist(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            fontWeight: FontWeight.w600,
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall),
-                                      ),
-                                    )
-                                  ],
+                                  ),
                                 ),
                                 const SizedBox(height: 20),
                               ],
@@ -325,6 +303,48 @@ class _XAuthState extends ConsumerState<XAuth>
                   width: MediaQuery.of(context).size.width, child: popUp!)),
       ],
     );
+  }
+
+  void handleSubmit(_ViewModel vm, BuildContext context) {
+    if (formType == _FormType.login) {
+      vm.dispatch(AuthAction(
+          type: AuthActionType.login,
+          payload: LoginPayload(
+            client: ref.read(dioProvider),
+            email: email!,
+            password: password!,
+            rememberMe: rememberMe,
+            onDone: (p0) {
+              _notifyMessage('You are logged in').then(
+                  (value) => Navigator.of(context).popAndPushNamed('/home'));
+            },
+            onError: (p0) {
+              p0 as ({String message, AccessToken? token});
+              _notifyMessage(p0.message);
+            },
+          )));
+    } else if (formType == _FormType.register) {
+      vm.dispatch(AuthAction(
+          type: AuthActionType.register,
+          payload: RegistrationPayload(
+            client: ref.read(dioProvider),
+            name: name!,
+            email: email!,
+            password: password!,
+            confirmedPassword: confirmedPassword!,
+            onDone: (value) => _notifyMessage(
+                    'User registered, please login into your account')
+                .then((value) => setState(() => formType = _FormType.login)),
+            onError: (p0) => _notifyMessage(p0.toString()),
+          )));
+    }
+  }
+
+  Future<dynamic> _notifyMessage(String message) {
+    setState(() {
+      popUp = PopUp(animation: controller, message: message);
+    });
+    return showPopUp(controller, delay: Duration(seconds: 4));
   }
 }
 

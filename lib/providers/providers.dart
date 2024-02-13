@@ -18,7 +18,7 @@ Future<TemplateResponse> templates(TemplatesRef ref, AccessToken token) async {
 }
 
 @riverpod
-Future<dynamic> dashboard(DashboardRef ref, AccessToken token) async {
+Future<DashboardResponse> dashboard(DashboardRef ref, AccessToken token) async {
   final dioClient = ref.watch(dioProvider);
   return DashboardAPI.dashboard(dioClient, token);
 }
