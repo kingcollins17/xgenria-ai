@@ -24,10 +24,12 @@ class XAuth extends ConsumerStatefulWidget {
 class _XAuthState extends ConsumerState<XAuth>
     with SingleTickerProviderStateMixin {
   final formKey = GlobalKey<FormState>();
-  bool obscurePassword = false;
+  bool obscurePassword = true;
+
   bool isLoading = false;
   String? name, email, password, confirmedPassword;
-  bool rememberMe = true;
+  
+  bool rememberMe = false;
 
   Widget? popUp;
 

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
+import 'package:xgenria/api/project.dart';
 
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/actions/base.dart';
@@ -63,7 +64,9 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       page = ImageScreen();
       break;
     case '/image-result':
-      page = ImageResult(data: settings.arguments as ImageResultData);
+      if (settings.arguments is ImageResultData) {
+        page = ImageResult(data: settings.arguments as ImageResultData);
+      }
       break;
 
     case '/ai-doc':
@@ -137,22 +140,16 @@ class _TestAPIState extends State<TestAPI> {
                         setState(() {
                           isLoading = true;
                         });
-                        // ChatAPI.messages(
-                        //   dio,
-                        //   vm.auth.token!,
-                        //   chatId: 20,
-                        //   // content: 'Hello there',
-                        // ).then((value) => setState(() {
-                        //       isLoading = false;
-                        //       response = value.toString();
-                        //       data = value;
-                        //     }));
-                        vm.dispatch(
-                          DataAction(
-                              type: DataActionType.reset,
-                              payload: NetworkFetchPayload(
-                                  client: dio, token: vm.auth.token!)),
-                        );
+
+                        ProjectAPI.deleteProject(
+                          dio,
+                          vm.auth.token!,
+                          projectId: 19,
+                        ).then((value) => setState(() {
+                              isLoading = false;
+                              data = value;
+                              response = value.toString();
+                            }));
                       },
                       child: Text('Press me'),
                     ),
