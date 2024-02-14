@@ -30,6 +30,6 @@ final store = Store<XgenriaState>(
   middleware: [
     authMiddleware,
     imageMiddleware,
-    chatMiddleware,
+    // chatMiddleware,
   ],
 );

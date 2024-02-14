@@ -17,7 +17,18 @@ class ProjectNotifier extends _$ProjectNotifier {
         await ProjectAPI.createProject(ref.read(dioProvider), token);
 
     ref.invalidate(projectNotifierProvider);
+    await future;
 
     return response;
+  }
+
+  Future<void> delete(AccessToken token, int projectId) async {
+    final response = await ProjectAPI.deleteProject(
+      ref.read(dioProvider),
+      token,
+      projectId: projectId,
+    );
+    ref.invalidate(projectNotifierProvider);
+    await future;
   }
 }

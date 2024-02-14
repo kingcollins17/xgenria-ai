@@ -23,13 +23,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
-          child: Column(
-            children: [
-              Row(
+        title: Row(
                 children: [
                   SvgPicture.asset(
                     'asset/svgs/undraw_pic_profile_re_7g2h.svg',
@@ -56,6 +50,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   )
                 ],
               ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
+          child: Column(
+            children: [
+              
               const SizedBox(height: 20),
               // Text('My ')
               Wrap(
@@ -105,79 +106,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           ))
                 ],
               ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Projects',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 130,
-                child: ListView(scrollDirection: Axis.horizontal, children: [
-                  ...List.generate(
-                      5,
-                      (index) => Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Container(
-                                height: 120,
-                                constraints: BoxConstraints(
-                                    minWidth:
-                                        MediaQuery.of(context).size.width *
-                                            0.5),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF2C2C2C),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 5),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 10),
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.grey,
-                                              )),
-                                          child: Icon(
-                                            Icons.folder_rounded,
-                                            size: 10,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
-                                        Text(
-                                          'My AI Project',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          '10 items',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 14,
-                                            color: Colors.grey,
-                                          ),
-                                        )
-                                      ]),
-                                ),
-                              ),
-                            ),
-                          ))
-                ]),
-              ),
+             
               const SizedBox(height: 100)
             ],
           ),

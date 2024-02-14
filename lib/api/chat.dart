@@ -1,3 +1,5 @@
+
+
 import 'package:dio/dio.dart';
 import 'package:xgenria/models/chat.dart';
 import '../models/access_token.dart';
@@ -104,6 +106,22 @@ abstract class ChatAPI {
       );
     } catch (e) {
       return (status: false, message: e.toString(), id: null);
+    }
+  }
+
+  static Future<({String message, bool status})> deleteChat(
+      Dio dio, AccessToken token,
+      {required int chatId}) async {
+    try {
+      final response = await dio.delete(
+          Uri.https(cfg.domain, 'chat/$chatId/delete').toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      return (
+        status: response.statusCode == 200,
+        message: response.data['message'].toString()
+      );
+    } catch (e) {
+      return (status: false, message: e.toString());
     }
   }
 }

@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
+import 'package:xgenria/api/api.dart';
 import 'package:xgenria/api/project.dart';
+import 'package:xgenria/providers/project_provider.dart';
 
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/actions/base.dart';
@@ -115,41 +117,46 @@ class _TestAPIState extends State<TestAPI> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 50),
-                    // Text(vm.data.toString() ?? 'No response yet',
-                    //     style: GoogleFonts.poppins(
-                    //       fontSize: 16,
-                    //       color: Color(0xFFCFCFCF),
-                    //       decoration: TextDecoration.none,
-                    //     )),
+                    Text(vm.data.toString(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Color(0xFFCFCFCF),
+                          decoration: TextDecoration.none,
+                        )),
                     Text(data.toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Color(0xFFCFCFCF),
                           decoration: TextDecoration.none,
                         )),
-                    Text(
-                      vm.data.toString(),
-                      style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          decoration: TextDecoration.none,
-                          color: Colors.white),
-                    ),
+                    Consumer(builder: (context, ref, child) {
+                      final projects =
+                          ref.watch(projectNotifierProvider(vm.auth.token!));
+                      return projects.when<Widget>(
+                        data: (data) => Text(
+                          data.toString(),
+                          style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              decoration: TextDecoration.none,
+                              color: Colors.white),
+                        ),
+                        error: (Object error, StackTrace stackTrace) =>
+                            Text(stackTrace.toString()),
+                        loading: () => SpinKitChasingDots(color: Colors.white),
+                      );
+                    }),
                     const SizedBox(height: 20),
                     FilledButton(
                       onPressed: () {
                         setState(() {
                           isLoading = true;
                         });
-
-                        ProjectAPI.deleteProject(
-                          dio,
-                          vm.auth.token!,
-                          projectId: 19,
-                        ).then((value) => setState(() {
-                              isLoading = false;
-                              data = value;
-                              response = value.toString();
-                            }));
+                        ChatAPI.deleteChat(dio, vm.auth.token!, chatId: 10)
+                            .then((value) => setState(() {
+                                  isLoading = false;
+                                  data = value;
+                                  response = value.toString();
+                                }));
                       },
                       child: Text('Press me'),
                     ),

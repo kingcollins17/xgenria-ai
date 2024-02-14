@@ -161,7 +161,8 @@ class _ChatDMState extends ConsumerState<ChatDM> {
                                     textController.text = '';
                                     isChatLoading = true;
                                     scrollController.animateTo(
-                                        scrollController.offset + 100,
+                                        scrollController
+                                            .position.maxScrollExtent,
                                         duration:
                                             const Duration(milliseconds: 600),
                                         curve: Curves.easeIn);
@@ -181,7 +182,7 @@ class _ChatDMState extends ConsumerState<ChatDM> {
                                               isChatLoading = false;
 
                                               scrollController.animateTo(
-                                                  scrollController.offset + 150,
+                                                  scrollController.offset + 100,
                                                   duration: const Duration(
                                                       milliseconds: 600),
                                                   curve: Curves.easeIn);

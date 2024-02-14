@@ -7,7 +7,7 @@ import '../actions/data_actions.dart';
 class DataState {
   //
   List<ImageData> images;
-  List<ChatData> chats;
+  // List<ChatData> chats;
   String? message;
   bool isLoading;
   //
@@ -17,13 +17,13 @@ class DataState {
     this.message,
     this.isLoading = false,
     this.images = const <ImageData>[],
-    this.chats = const <ChatData>[],
+    // this.chats = const <ChatData>[],
     this.dirtied = const <DirtyResource>{},
   });
 
   @override
   String toString() =>
-      'DataState{images: $images, chats: $chats, message: $message, '
+      'DataState{images: $images, message: $message, '
       'isLoading: $isLoading, dirtied: $dirtied}';
 }
 
@@ -31,7 +31,7 @@ enum DirtyResource { images, chats, projects, documents }
 
 final dataReducer = combineReducers<DataState>([
   imageDataReducer,
-  chatReducer,
+  // chatReducer,
   _otherReducer,
 ]);
 
@@ -67,30 +67,7 @@ DataState imageDataReducer(DataState state, action) {
   return state;
 }
 
-DataState chatReducer(DataState state, action) {
-  if (action is DataAction) {
-    switch (action.type) {
-      case DataActionType.fetchChats:
-        state
-          ..isLoading = true
-          ..message = 'Fetching your chats';
-        break;
 
-      case DataActionType.updateFetchedChats:
-        if (action.payload is UpdatePayload<List<ChatData>?>) {
-          final pd = action.payload as UpdatePayload<List<ChatData>?>;
-          state
-            ..chats = pd.data ?? []
-            ..isLoading = false
-            ..message = 'Fetched chats successfully';
-        }
-        break;
-      default:
-        break;
-    }
-  }
-  return state;
-}
 
 DataState _otherReducer(DataState state, action) {
   if (action is DataAction) {
@@ -111,7 +88,7 @@ DataState _otherReducer(DataState state, action) {
       
       case DataActionType.reset:
         state
-          ..chats = []
+          // ..chats = []
           ..images = []
           ..isLoading = false
           ..message = null;

@@ -32,29 +32,3 @@ dynamic imageMiddleware(
   }
   next(action);
 }
-
-dynamic chatMiddleware(Store store, action, NextDispatcher next) {
-  if (action is DataAction) {
-    switch (action.type) {
-      case DataActionType.fetchChats:
-        if (action.payload is NetworkFetchPayload) {
-          final pd = action.payload as NetworkFetchPayload;
-
-          ///
-          ChatAPI.chats(pd.client, pd.token).then((result) => result.status
-              ? store.dispatch(DataAction(
-                  type: DataActionType.updateFetchedChats,
-                  payload: UpdatePayload(result.data),
-                ))
-              : store.dispatch(DataAction(
-                  type: DataActionType.notify,
-                  payload: NotifyPayload(notification: result.message),
-                )));
-        }
-        break;
-      default:
-        break;
-    }
-  }
-  next(action);
-}
