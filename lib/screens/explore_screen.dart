@@ -130,22 +130,32 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
                           temps.length,
                           (index) => Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.9,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 15,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: Colors.grey),
-                                  ),
-                                  child: Text(
-                                    temps[index].name,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .pushNamed('/create-doc', arguments: (
+                                      temps,
+                                      value.categories![currentCategoryIndex],
+                                      index,
+                                    ));
+                                  },
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 15,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.grey),
+                                    ),
+                                    child: Text(
+                                      temps[index].name,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),

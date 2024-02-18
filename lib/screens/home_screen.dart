@@ -53,7 +53,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: child,
             ),
             child: destination == HoverDestination.home
-                ? IndexPage()
+                ? IndexPage(
+                    navigate: (p0) {
+                      setState(() {
+                        destination = p0;
+                      });
+                    },
+                  )
                 : destination == HoverDestination.explore
                     ? StoreConnector<XgenriaState, _ViewModel>(
                         converter: (store) => _ViewModel(store),
@@ -68,6 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             bottom: 5,
             child: HoverMenu(
               isOpen: true,
+              initDestination: destination,
               onChanged: (value) => setState(() {
                 previous = destination;
                 destination = value;
@@ -79,7 +86,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
-
 
 class _ViewModel {
   final Store<XgenriaState> _store;

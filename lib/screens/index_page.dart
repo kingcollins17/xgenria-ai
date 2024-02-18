@@ -1,16 +1,29 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:redux/redux.dart';
+import 'package:xgenria/api/dash_board.dart';
+import 'package:xgenria/models/models.dart';
+import 'package:xgenria/providers/providers.dart';
+import 'package:xgenria/redux/core.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:xgenria/screens/home_screen.dart';
+import 'package:xgenria/widgets/menu.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class IndexPage extends StatelessWidget {
+class IndexPage extends ConsumerWidget {
   const IndexPage({
     super.key,
+    this.navigate,
   });
 
+  final Function(HoverDestination)? navigate;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 15,
@@ -99,73 +112,113 @@ class IndexPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Start creating with our Templates',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Available Templates',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  'see all',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Color(0xFFC4C4C4),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Column(
-              children: List.generate(
-                  _templates.length,
-                  (index) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          decoration: BoxDecoration(
-                              color: Color(0xFF252525),
-                              border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary),
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _templates[index],
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+            StoreConnector<XgenriaState, _ViewModel>(
+                converter: (store) => _ViewModel(store),
+                builder: (context, vm) {
+                  final temps = ref.watch(templatesProvider(vm.auth.token!));
+                  return Column(
+                    children: [
+                      Text(
+                        'Start creating with our Templates',
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Available Templates',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (navigate != null) {
+                                navigate!(HoverDestination.explore);
+                              }
+                            },
+                            child: Text(
+                              'see all',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Color(0xFFC4C4C4),
                               ),
-                            ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      temps.when(
+                        loading: () => Center(
+                          child: SpinKitRipple(
+                            size: 30,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
-                      )),
-            ),
+                        data: (data) => Column(
+                          children: List.generate(
+                              data.categories!.length,
+                              (index) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 15, horizontal: 10),
+                                      decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          border: Border.all(
+                                            color: Color(0xFF5A5A5A),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            data.categories![index].name,
+                                            style: GoogleFonts.quicksand(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )),
+                        ),
+                        error: (Object error, StackTrace stackTrace) => Center(
+                          child: Text('Please refresh'),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+
             const SizedBox(height: 30),
-            const SizedBox(height: 100),
+            // const SizedBox(height: 100),
           ],
         ),
       ),
     );
   }
+}
+
+class _ViewModel {
+  final Store<XgenriaState> _store;
+  final AuthState auth;
+  _ViewModel(Store<XgenriaState> store)
+      : _store = store,
+        auth = store.state.auth;
+  void dispatch(action) => _store.dispatch(action);
 }
 
 final _templates = [

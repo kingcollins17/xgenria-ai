@@ -24,6 +24,28 @@ abstract class DocumentAPI {
       return (data: null, message: e.toString(), status: false);
     }
   }
+
+  static Future<dynamic> createDoc(
+    Dio dio,
+    AccessToken token, {
+    required String name,
+    int type = 38,
+    required String text,
+  }) async {
+    try {
+      final response = await dio.post(
+        Uri.https(cfg.domain, '/document/create').toString(),
+        data: {'name': name, 'type': type, 'text': text},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return response.data;
+    } on Exception catch (e) {
+      return e;
+    }
+  }
+
+  static Future<dynamic> readDoc(Dio dio, AccessToken token) async {}
 }
 
 typedef DocumentResponse = ({DocumentData? data, String message, bool status});

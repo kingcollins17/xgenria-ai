@@ -110,8 +110,8 @@ class _AIDocumentsState extends ConsumerState<AIDocuments> {
 }
 
 class CreateDocument extends ConsumerStatefulWidget {
-  const CreateDocument({super.key, required this.template});
-  final Template template;
+  const CreateDocument({super.key, required this.templates});
+  final (List<Template>, TemplateCategory, int) templates;
   @override
   ConsumerState<CreateDocument> createState() => _CreateDocumentState();
 }
@@ -126,8 +126,7 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
   @override
   void initState() {
     super.initState();
-    // // category =
-    // ref.watch(templatesProvider).
+    currentTemplateIndex = widget.templates.$3;
   }
 
   @override
@@ -150,13 +149,8 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'category\$1,',
-                width: 60,
-                height: 60,
-              ),
               Text(
-                'category.\$2',
+                widget.templates.$2.name,
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -167,7 +161,7 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   // itemCount: category.$3.length,
-                  itemCount: 3,
+                  itemCount: widget.templates.$1.length,
                   itemBuilder: (context, index) => Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -188,7 +182,7 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
                           duration: Duration(milliseconds: 500),
                           child: Text(
                             // category.$3[index],
-                            '',
+                            widget.templates.$1[index].name,
                             style: TextStyle(fontSize: 14),
                           ),
                         ),
@@ -199,7 +193,7 @@ class _CreateDocumentState extends ConsumerState<CreateDocument> {
               ),
               const SizedBox(height: 10),
               _CustomInputField(label: 'Name'),
-              _CustomInputField(label: 'Python Problem', maxLines: 5),
+              _CustomInputField(label: 'Input', maxLines: 5),
               _CustomInputField(label: 'Creative'),
               const SizedBox(height: 20),
               Text('Select Variants', style: GoogleFonts.poppins(fontSize: 16)),

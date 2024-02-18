@@ -7,9 +7,14 @@ const radius = 50.0;
 const height = 50.0;
 
 class HoverMenu extends StatefulWidget {
-  const HoverMenu({super.key, this.isOpen = true, this.onChanged});
+  const HoverMenu(
+      {super.key,
+      this.isOpen = true,
+      this.onChanged,
+      this.initDestination = HoverDestination.home});
   final bool isOpen;
   final void Function(HoverDestination)? onChanged;
+  final HoverDestination initDestination;
 
   @override
   State<HoverMenu> createState() => _HoverMenuState();
@@ -25,12 +30,19 @@ class _HoverMenuState extends State<HoverMenu>
   void initState() {
     super.initState();
     isOpen = widget.isOpen;
+    groupValue = widget.initDestination;
   }
 
   @override
   void didUpdateWidget(covariant HoverMenu oldWidget) {
     super.didUpdateWidget(oldWidget);
     isOpen = widget.isOpen;
+    if (oldWidget.initDestination != widget.initDestination) {
+      setState((){
+        groupValue = widget.initDestination;
+      });
+      
+    }
   }
 
   void navigate(HoverDestination destination) {

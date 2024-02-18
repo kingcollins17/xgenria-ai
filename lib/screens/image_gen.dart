@@ -12,8 +12,6 @@ import 'package:xgenria/redux/actions/base.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/pop_up.dart';
 
-
-
 class ImageScreen extends ConsumerStatefulWidget {
   const ImageScreen({super.key});
   @override
@@ -69,6 +67,35 @@ class _ImageScreenState extends ConsumerState<ImageScreen>
               style: GoogleFonts.poppins(
                   fontSize: 20, fontWeight: FontWeight.w500),
             ),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed('/image-history');
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.primary)),
+                  child: Row(children: [
+                    Icon(
+                      Icons.history,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'History',
+                      style: GoogleFonts.quicksand(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.primary),
+                    )
+                  ]),
+                ),
+              ),
+              SizedBox(width: 8),
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),

@@ -7,16 +7,23 @@ import '_config.dart' as cfg;
 typedef RegisterResponse = ({String message, bool status});
 
 abstract class AuthAPI {
-  static Future<dynamic> user(Dio dio, AccessToken token) async {
+  static Future<({UserData? data, String message, bool status})> user(
+      Dio dio, AccessToken token) async {
     try {
       final response = await dio.get(Uri.https(cfg.domain, '/user').toString(),
           options: Options(headers: {'Authorization': 'Bearer $token'}));
 
-      return UserData.fromJson(response.data);
-    } on TypeError catch (err) {
-      return (err.toString(), err.stackTrace);
+      return (
+        status: response.statusCode == 200,
+        data: response.statusCode == 200
+            ? UserData.fromJson(response.data)
+            : null,
+        message: response.statusCode == 200
+            ? 'Fetched'
+            : response.data['message'].toString()
+      );
     } catch (e) {
-      return e;
+      return (status: false, data: null, message: e.toString());
     }
   }
 
