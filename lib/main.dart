@@ -19,6 +19,7 @@ import 'package:xgenria/redux/actions/base.dart';
 import 'package:xgenria/redux/actions/data_actions.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/redux/reducers/data_reducer.dart';
+import 'package:xgenria/screens/create_trans.dart';
 import 'package:xgenria/screens/image_history.dart';
 import 'api/doc.dart';
 import 'api/transcription.dart';
@@ -65,6 +66,9 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
         final args = settings.arguments as (ChatData, AccessToken);
         page = ChatDM(chat: args.$1, token: args.$2);
       }
+      break;
+    case '/ai-transcript':
+      page = CreateTranscription();
       break;
     case '/create-chat':
       page = CreateChat();

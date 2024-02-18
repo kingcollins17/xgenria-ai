@@ -108,7 +108,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 2.0, vertical: 2),
                                           child: Container(
-                                               
                                               constraints: BoxConstraints(
                                                 minHeight: 100,
                                                 minWidth: MediaQuery.of(context)
@@ -259,9 +258,18 @@ class _Drawer extends ConsumerWidget {
               // _DrawerTile(data: Icons.folder_rounded, label: 'Create Project'),
               _DrawerTile(
                   data: Icons.edit_note_rounded, label: 'Created Documents'),
-              _DrawerTile(
-                  data: Icons.photo_filter_rounded, label: 'Generated Images'),
-              _DrawerTile(data: Icons.chat_rounded, label: 'All AI Chats'),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed('/image-history'),
+                child: _DrawerTile(
+                    data: Icons.photo_filter_rounded,
+                    label: 'Generated Images'),
+              ),
+              GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/chats');
+                  },
+                  child: _DrawerTile(
+                      data: Icons.chat_rounded, label: 'All AI Chats')),
               const SizedBox(height: 20),
               Container(
                 decoration: BoxDecoration(

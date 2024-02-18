@@ -95,9 +95,9 @@ class _ImageResultState extends ConsumerState<ImageResult> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.download_rounded),
+                      Icon(Icons.delete_forever_rounded),
                       const SizedBox(width: 8),
-                      Text('Download'),
+                      Text('Delete'),
                     ],
                   ),
                 ),

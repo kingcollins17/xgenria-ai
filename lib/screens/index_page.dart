@@ -250,6 +250,6 @@ final actions = [
     'asset/images/icon-5.png',
     'Transcribe documents',
     'Easily chat with our very capable language models about everything and anything',
-    '/test'
+    '/ai-transcript'
   )
 ];
