@@ -21,6 +21,8 @@ import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/redux/reducers/data_reducer.dart';
 import 'package:xgenria/screens/create_trans.dart';
 import 'package:xgenria/screens/image_history.dart';
+import 'package:xgenria/screens/trans_detail.dart';
+import 'package:xgenria/screens/trans_list.dart';
 import 'api/doc.dart';
 import 'api/transcription.dart';
 
@@ -67,9 +69,18 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
         page = ChatDM(chat: args.$1, token: args.$2);
       }
       break;
+    case '/create-trans':
     case '/ai-transcript':
       page = CreateTranscription();
       break;
+    case '/trans-list':
+      page = TranscriptionList();
+      break;
+    case '/trans-detail':
+      if (settings.arguments is TranscriptionData) {
+        page =
+            TranscriptionDetail(data: settings.arguments as TranscriptionData);
+      }
     case '/create-chat':
       page = CreateChat();
       break;

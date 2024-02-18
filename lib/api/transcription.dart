@@ -53,4 +53,6 @@ abstract class TranscriptionAPI {
       return (status: false, message: e.toString(), id: null);
     }
   }
+
+  static Future<dynamic> delete(Dio dio, AccessToken token) async {}
 }
