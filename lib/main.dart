@@ -12,6 +12,7 @@ import 'package:redux/redux.dart';
 import 'package:xgenria/api/api.dart';
 import 'package:xgenria/api/project.dart';
 import 'package:xgenria/models/transcription.dart';
+import 'package:xgenria/providers/doc_provider.dart';
 import 'package:xgenria/providers/project_provider.dart';
 
 import 'package:xgenria/providers/providers.dart';
@@ -27,6 +28,7 @@ import 'api/doc.dart';
 import 'api/transcription.dart';
 
 import 'models/models.dart';
+import 'screens/create_document.dart';
 import 'screens/screens.dart';
 import 'theme.dart';
 
@@ -104,7 +106,7 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
     case '/create-doc':
       if (settings.arguments is (List<Template>, TemplateCategory, int)) {
         page = CreateDocument(
-            templates:
+            data:
                 settings.arguments as (List<Template>, TemplateCategory, int));
       }
       break;
@@ -165,47 +167,49 @@ class _TestAPIState extends State<TestAPI> {
                           color: Color(0xFFCFCFCF),
                           decoration: TextDecoration.none,
                         )),
-                    // Consumer(builder: (context, ref, child) {
-                    //   final projects =
-                    //       ref.watch(projectNotifierProvider(vm.auth.token!));
-                    //   return projects.when<Widget>(
-                    //     data: (data) => Text(
-                    //       data.toString(),
-                    //       style: GoogleFonts.poppins(
-                    //           fontSize: 16,
-                    //           decoration: TextDecoration.none,
-                    //           color: Colors.white),
-                    //     ),
-                    //     error: (Object error, StackTrace stackTrace) =>
-                    //         Text(stackTrace.toString()),
-                    //     loading: () => SpinKitChasingDots(color: Colors.white),
-                    //   );
-                    // }),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: () {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        // FilePicker.platform
-                        //     .pickFiles(type: FileType.any)
-                        //     .then((value) {
-                        //   file = File(value!.files.first.path!);
-                        // });
-                        // TranscriptionAPI.create(dio, vm.auth.token!,
-                        //         name: 'My music', file: file!)
-                        //     .then((value) => setState(() {
-                        //           isLoading = false;
-                        //           data = value;
-                        //         }));
-                        TranscriptionAPI.transcriptions(dio, vm.auth.token!)
-                            .then((value) => setState(() {
-                                  isLoading = false;
-                                  data = value;
-                                }));
-                      },
-                      child: Text('Press me'),
-                    ),
+                    Consumer(builder: (context, ref, child) {
+                      final docs =
+                          ref.watch(docNotifierProvider(vm.auth.token!));
+                      return Column(
+                        children: [
+                          docs.when<Widget>(
+                            data: (data) => Text(
+                              data.toString(),
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  decoration: TextDecoration.none,
+                                  color: Colors.white),
+                            ),
+                            error: (Object error, StackTrace stackTrace) =>
+                                Text(stackTrace.toString()),
+                            loading: () =>
+                                SpinKitChasingDots(color: Colors.white),
+                          ),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                            onPressed: () {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              final notifier = ref.read(
+                                  docNotifierProvider(vm.auth.token!).notifier);
+                              notifier
+                                  .deleteDoc(
+                                    // name: 'My test third doc',
+                                    // input:
+                                    // 'Generate some random word document about history',
+                                    187,
+                                  )
+                                  .then((value) => setState(() {
+                                        isLoading = false;
+                                        data = value;
+                                      }));
+                            },
+                            child: Text('Press me'),
+                          ),
+                        ],
+                      );
+                    }),
                     if (isLoading || vm.data.isLoading)
                       SpinKitPulse(
                         color: Colors.purple,
