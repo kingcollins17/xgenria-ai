@@ -256,8 +256,16 @@ class _Drawer extends ConsumerWidget {
               const SizedBox(height: 10),
               Divider(color: Color(0xFF363636)),
               // _DrawerTile(data: Icons.folder_rounded, label: 'Create Project'),
-              _DrawerTile(
-                  data: Icons.edit_note_rounded, label: 'Created Documents'),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed('/doc-list'),
+                child: _DrawerTile(
+                    data: Icons.edit_note_rounded, label: 'Created Documents'),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed('/trans-list'),
+                child:
+                    _DrawerTile(data: Icons.mic, label: 'All Transcriptions'),
+              ),
               GestureDetector(
                 onTap: () => Navigator.of(context).pushNamed('/image-history'),
                 child: _DrawerTile(

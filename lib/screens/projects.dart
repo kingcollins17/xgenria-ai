@@ -25,6 +25,10 @@ class XProject extends StatefulWidget {
 }
 
 class _XProjectState extends State<XProject> {
+  String? searchTerm;
+
+  void _search(String term) => setState(() => searchTerm = term);
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,7 +68,7 @@ class _XProjectState extends State<XProject> {
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                _SearchBar(),
+                                _SearchBar(onChanged: _search),
                                 const SizedBox(height: 20),
                                 _AddProjectButton(),
                                 const SizedBox(height: 20),
@@ -76,7 +80,9 @@ class _XProjectState extends State<XProject> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                _ProjectUI(projects: projects),
+                                _ProjectUI(
+                                    projects: projects, searchTerm: searchTerm),
+                                const SizedBox(height: 100),
                               ]);
                         });
                       }),
@@ -93,7 +99,10 @@ class _XProjectState extends State<XProject> {
 class _SearchBar extends StatelessWidget {
   const _SearchBar({
     super.key,
+    this.onChanged,
   });
+
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +111,8 @@ class _SearchBar extends StatelessWidget {
         color: const Color(0xFF313131),
         borderRadius: BorderRadius.circular(25),
       ),
-      child: const TextField(
+      child: TextField(
+        onChanged: onChanged,
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
@@ -154,7 +164,9 @@ class _ProjectUI extends StatelessWidget {
   const _ProjectUI({
     super.key,
     required this.projects,
+    this.searchTerm,
   });
+  final String? searchTerm;
 
   final AsyncValue<FetchProjectResponse> projects;
 
@@ -163,100 +175,113 @@ class _ProjectUI extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: projects.when(
-          data: (data) => Column(
-                  children: List.generate(
-                // scrollDirection: Axis.horizontal,
-                data.data?.length ?? 0,
-                (index) => Padding(
+          data: (data) {
+            final int? length;
+            List<ProjectData>? filtered;
+            if (searchTerm != null) {
+              filtered = data.data
+                  ?.where((element) => element.name.contains(searchTerm!))
+                  .toList();
+              length = filtered?.length;
+            } else {
+              filtered = data.data!;
+              length = data.data?.length;
+            }
+            return Column(
+                children: List.generate(
+              // scrollDirection: Axis.horizontal,
+              length ?? 0,
+              (index) => GestureDetector(
+                onTap: () => Navigator.of(context)
+                    .pushNamed('/project-detail', arguments: filtered![index]),
+                child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                  child: Center(
-                    child: Container(
-                      // height: 140,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                              offset: Offset(4, 4),
-                              blurRadius: 4,
-                              color: Color(0xFF202020))
-                        ],
-                        color: const Color(0xFF1F1F1F),
-                      ),
-                      child: Row(
-                          // crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const SizedBox(width: 4),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: Color(0x379E9E9E),
-                                  border: Border.all(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  shape: BoxShape.circle),
-                              child: Icon(
-                                Icons.folder,
-                                size: 10,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              data.data![index].name,
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Expanded(
-                              child: Consumer(builder: (context, ref, child) {
-                                return Align(
-                                  alignment: Alignment.centerRight,
-                                  child: StoreConnector<XgenriaState,
-                                          _ViewModel>(
-                                      converter: (store) => _ViewModel(store),
-                                      builder: (context, vm) {
-                                        return GestureDetector(
-                                          onTap: () => showModal<bool>(
-                                            context: context,
-                                            builder: (context) => ConfirmAction(
-                                              message:
-                                                  'Are you sure you want to delete project '
-                                                  '${data.data![index].name} and all resources under it',
-                                            ),
-                                          ).then((value) => value == true
-                                              ? ref
-                                                  .read(projectNotifierProvider(
-                                                          vm.auth.token!)
-                                                      .notifier)
-                                                  .delete(
-                                                    vm.auth.token!,
-                                                    data.data![index].projectId,
-                                                  )
-                                              : null),
-                                          child: Icon(
-                                            Icons.delete,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            size: 20,
-                                          ),
-                                        );
-                                      }),
-                                );
-                              }),
-                            ),
-                            const SizedBox(width: 1),
-                          ]),
+                  child: Container(
+                    // height: 140,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                            offset: Offset(4, 4),
+                            blurRadius: 4,
+                            color: Color(0xFF0A0A0A))
+                      ],
+                      color: const Color(0xFF1F1F1F),
                     ),
+                    child: Row(
+                        // crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Color(0x379E9E9E),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                shape: BoxShape.circle),
+                            child: Icon(
+                              Icons.folder,
+                              size: 10,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            filtered![index].name,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Expanded(
+                            child: Consumer(builder: (context, ref, child) {
+                              return Align(
+                                alignment: Alignment.centerRight,
+                                child: StoreConnector<XgenriaState, _ViewModel>(
+                                    converter: (store) => _ViewModel(store),
+                                    builder: (context, vm) {
+                                      return GestureDetector(
+                                        onTap: () => showModal<bool>(
+                                          context: context,
+                                          builder: (context) => ConfirmAction(
+                                            message:
+                                                'Are you sure you want to delete project '
+                                                '${filtered![index].name} and all resources under it',
+                                          ),
+                                        ).then((value) => value == true
+                                            ? ref
+                                                .read(projectNotifierProvider(
+                                                        vm.auth.token!)
+                                                    .notifier)
+                                                .delete(
+                                                  vm.auth.token!,
+                                                  data.data![index].projectId,
+                                                )
+                                            : null),
+                                        child: Icon(
+                                          Icons.delete,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          size: 15,
+                                        ),
+                                      );
+                                    }),
+                              );
+                            }),
+                          ),
+                          const SizedBox(width: 1),
+                        ]),
                   ),
                 ),
-              )),
+              ),
+            ));
+          },
           error: (error, stackTrace) => Text(
                 'Unable to fetch projects right now',
                 style: GoogleFonts.quicksand(fontSize: 16),

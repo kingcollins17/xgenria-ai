@@ -5,7 +5,7 @@ import 'package:xgenria/providers/providers.dart';
 
 part 'doc_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class DocNotifier extends _$DocNotifier {
   @override
   Future<DocumentData?> build(AccessToken token) async {

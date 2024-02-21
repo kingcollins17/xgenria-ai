@@ -21,7 +21,10 @@ import 'package:xgenria/redux/actions/data_actions.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/redux/reducers/data_reducer.dart';
 import 'package:xgenria/screens/create_trans.dart';
+import 'package:xgenria/screens/doc_list.dart';
 import 'package:xgenria/screens/image_history.dart';
+import 'package:xgenria/screens/project_detail.dart';
+import 'package:xgenria/screens/read_doc.dart';
 import 'package:xgenria/screens/trans_detail.dart';
 import 'package:xgenria/screens/trans_list.dart';
 import 'api/doc.dart';
@@ -61,6 +64,12 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       break;
     case '/project':
       page = XProject();
+      break;
+    case 'project-detail':
+    case '/project-detail':
+      if (settings.arguments is ProjectData) {
+        page = ProjectDetail(project: settings.arguments as ProjectData);
+      }
       break;
     case '/chats':
       page = ChatList();
@@ -108,6 +117,15 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
         page = CreateDocument(
             data:
                 settings.arguments as (List<Template>, TemplateCategory, int));
+      }
+      break;
+    case '/doc-list':
+      page = DocList();
+      break;
+    case 'read-doc':
+    case '/read-doc':
+      if (settings.arguments is Document) {
+        page = ReadDocument(doc: settings.arguments as Document);
       }
       break;
     case '/test':

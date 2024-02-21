@@ -14,7 +14,9 @@ class ProjectNotifier extends _$ProjectNotifier {
   Future<CreateProjectResponse> create(AccessToken token,
       {required String name, String color = '#FFFFFF'}) async {
     final response =
-        await ProjectAPI.createProject(ref.read(dioProvider), token);
+        await ProjectAPI.createProject(
+        ref.read(dioProvider), token,
+        name: name);
 
     ref.invalidate(projectNotifierProvider);
     await future;

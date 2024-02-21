@@ -10,6 +10,8 @@ import 'package:xgenria/screens/document.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:xgenria/widgets/pop_up.dart';
+import '../providers/providers.dart';
+import '../api/api.dart';
 
 import '../redux/reducers/auth_reducer.dart';
 import '../redux/state.dart';
@@ -240,13 +242,25 @@ class _CreateDocumentState extends ConsumerState<CreateDocument>
                                       input: input!,
                                       templateId: widget
                                           .data.$1[currentTemplateIndex].id)
-                                  .then((value) => setState(() {
-                                        isLoading = false;
-                                        notification = PopUp(
-                                            animation: controller,
-                                            message: value.$2);
-                                        showPopUp(controller);
-                                      }));
+                                  .then((value) {
+                                _notify(value.$2);
+                                if (value.$1 && value.$3 != null) {
+                                  DocumentAPI.readDoc(
+                                          ref.read(dioProvider), vm.auth.token!,
+                                          id: value.$3!)
+                                      .then(
+                                    (doc) {
+                                      doc.status && doc.data != null
+                                          ? Navigator.of(context).pushNamed(
+                                              '/read-doc',
+                                              arguments: doc.data!)
+                                          : _notify(doc.message,
+                                              loading: false);
+                                      ;
+                                    },
+                                  );
+                                }
+                              });
                             }
                           },
                           child: Container(
@@ -292,6 +306,15 @@ class _CreateDocumentState extends ConsumerState<CreateDocument>
             ],
           );
         });
+  }
+
+  void _notify(String value, {bool loading = false}) {
+    setState(() {
+      isLoading = loading;
+      notification =
+          PopUp(animation: controller, message: '$value Please wait ...');
+    });
+    showPopUp(controller);
   }
 }
 

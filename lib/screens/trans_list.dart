@@ -52,71 +52,79 @@ class _TranscriptionListState extends ConsumerState<TranscriptionList> {
                                       (index) => Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 6.0),
-                                            child: Container(
-                                              constraints: BoxConstraints(
-                                                  minHeight: 100,
-                                                  minWidth:
-                                                      MediaQuery.of(context)
-                                                              .size
-                                                              .width *
-                                                          0.9),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10, vertical: 10),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: Color(0xFF333333),
-                                              ),
-                                              child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      data.data![index].name,
-                                                      style:
-                                                          GoogleFonts.quicksand(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      () {
-                                                        final content = data
-                                                            .data![index]
-                                                            .content;
-                                                        return content
-                                                                .substring(
-                                                                    0, 50) +
-                                                            '...';
-                                                      }(),
-                                                      style:
-                                                          GoogleFonts.quicksand(
-                                                        fontSize: 14,
-                                                        color:
-                                                            Color(0xFFCFCFCF),
-                                                      ),
-                                                    ),
-                                                    if (data.data![index]
-                                                            .projectId !=
-                                                        null)
+                                            child: GestureDetector(
+                                              onTap: () => Navigator.of(context)
+                                                  .pushNamed('/trans-detail',
+                                                      arguments:
+                                                          data.data![index]),
+                                              child: Container(
+                                                constraints: BoxConstraints(
+                                                    minHeight: 75,
+                                                    minWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.9),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: Color(0xFF333333),
+                                                ),
+                                                child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
                                                       Text(
-                                                        'project' +
-                                                            projects
-                                                                .value!.data!
-                                                                .firstWhere((element) =>
-                                                                    element
-                                                                        .projectId ==
-                                                                    data
-                                                                        .data![
-                                                                            index]
-                                                                        .projectId)
-                                                                .toString(),
+                                                        data.data![index].name,
                                                         style: GoogleFonts
                                                             .quicksand(
-                                                                fontSize: 12),
-                                                      )
-                                                  ]),
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        () {
+                                                          final content = data
+                                                              .data![index]
+                                                              .content;
+                                                          return content
+                                                                  .substring(
+                                                                      0, 50) +
+                                                              '...';
+                                                        }(),
+                                                        style: GoogleFonts
+                                                            .quicksand(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Color(0xFFCFCFCF),
+                                                        ),
+                                                      ),
+                                                      if (data.data![index]
+                                                              .projectId !=
+                                                          null)
+                                                        Text(
+                                                          'project' +
+                                                              projects
+                                                                  .value!.data!
+                                                                  .firstWhere((element) =>
+                                                                      element
+                                                                          .projectId ==
+                                                                      data
+                                                                          .data![
+                                                                              index]
+                                                                          .projectId)
+                                                                  .toString(),
+                                                          style: GoogleFonts
+                                                              .quicksand(
+                                                                  fontSize: 12),
+                                                        )
+                                                    ]),
+                                              ),
                                             ),
                                           ))
                                 ]),

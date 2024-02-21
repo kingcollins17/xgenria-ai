@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dio/dio.dart';
 import 'package:xgenria/api/api.dart';
-import 'package:xgenria/models/access_token.dart';
-import 'package:xgenria/api/dash_board.dart';
 import 'package:xgenria/models/models.dart';
 
 part 'providers.g.dart';
