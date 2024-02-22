@@ -54,5 +54,8 @@ abstract class TranscriptionAPI {
     }
   }
 
-  static Future<dynamic> delete(Dio dio, AccessToken token) async {}
+  static Future<dynamic> delete(Dio dio, AccessToken token,
+      {required int id}) async {
+    try {} catch (e) {}
+  }
 }

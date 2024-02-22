@@ -252,7 +252,7 @@ class _OnboardContent extends StatelessWidget {
                 Text(
                   data.title,
                   style: GoogleFonts.poppins(
-                    fontSize: 40,
+                    fontSize: 32,
                     textStyle: Theme.of(context).textTheme.titleMedium,
                     fontWeight: FontWeight.w700,
                   ),

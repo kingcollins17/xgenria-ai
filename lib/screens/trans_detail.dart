@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:xgenria/models/transcription.dart';
+import 'package:xgenria/providers/trans_provider.dart';
+import 'package:xgenria/redux/core.dart';
 
 class TranscriptionDetail extends ConsumerStatefulWidget {
   const TranscriptionDetail({super.key, required this.data});
@@ -18,6 +20,7 @@ class TranscriptionDetail extends ConsumerStatefulWidget {
 }
 
 class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -80,25 +83,50 @@ class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
           bottom: 15,
           width: MediaQuery.of(context).size.width,
           child: Center(
-            child: FilledButton.icon(
-              onPressed: () {},
-              style: ButtonStyle(
-                  fixedSize: MaterialStatePropertyAll(
-                      Size(MediaQuery.of(context).size.width * 0.8, 45)),
-                  backgroundColor: MaterialStatePropertyAll(
-                      Theme.of(context).colorScheme.primary),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white)),
-              icon: Icon(Icons.delete),
-              label: Text(
-                'Delete transcription',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-            ),
+            child: StoreConnector<XgenriaState, _ViewModel>(
+                converter: (store) => _ViewModel(store),
+                builder: (context, vm) {
+                  return FilledButton.icon(
+                    onPressed: () {
+                      setState(() => isLoading = true);
+                      final notifier = ref.read(
+                        transNotifierProvider(vm.auth.token!).notifier,
+                      );
+
+                      notifier
+                          .delete(widget.data.id)
+                          .then((value) => setState(() {
+                                isLoading = false;
+                              }));
+                    },
+                    style: ButtonStyle(
+                        fixedSize: MaterialStatePropertyAll(
+                            Size(MediaQuery.of(context).size.width * 0.8, 45)),
+                        backgroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).colorScheme.primary),
+                        foregroundColor:
+                            MaterialStatePropertyAll(Colors.white)),
+                    icon: Icon(Icons.delete),
+                    label: Text(
+                      isLoading ? 'Deleting' : 'Delete transcription',
+                      style: GoogleFonts.poppins(fontSize: 16),
+                    ),
+                  );
+                }),
           ),
         )
       ],
     );
   }
+}
+
+class _ViewModel {
+  final Store<XgenriaState> _store;
+  final AuthState auth;
+  _ViewModel(Store<XgenriaState> store)
+      : _store = store,
+        auth = store.state.auth;
+  void dispatch(action) => _store.dispatch(action);
 }
 
 class _CopyClipboard extends StatelessWidget {

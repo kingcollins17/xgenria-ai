@@ -95,10 +95,14 @@ class _ReadDocumentState extends ConsumerState<ReadDocument> {
                     builder: (context, vm) {
                       return FilledButton(
                           onPressed: () {
+                            setState(() => isLoading = true);
                             var notifier = ref.read(
-                                docNotifierProvider(vm.auth.token!).notifier);
-                            setState(() {
-                              isLoading = true;
+                              docNotifierProvider(vm.auth.token!).notifier,
+                            );
+
+                            notifier.deleteDoc(widget.doc.id).then((value) {
+                              setState(() => isLoading = false);
+                              value ? Navigator.pop(context) : null;
                             });
                           },
                           style: ButtonStyle(

@@ -13,6 +13,9 @@ class TransNotifier extends _$TransNotifier {
   @override
   Future<_Data> build(AccessToken token) =>
       TranscriptionAPI.transcriptions(ref.read(dioProvider), token);
+
+  Future<dynamic> delete(int id) =>
+      TranscriptionAPI.delete(ref.read(dioProvider), token, id: id);
 }
 
 typedef _Data = ({List<TranscriptionData>? data, String message, bool status});

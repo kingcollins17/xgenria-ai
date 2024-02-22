@@ -67,8 +67,8 @@ MaterialPageRoute _onGenerateRoute(RouteSettings routeSettings,
       } else {
         page = XOnboard();
         settings.put('hasLaunched', true);
-        // settings.delete('hasLaunced');
       }
+      // page = XOnboard();
       break;
     case '/home':
       page = HomeScreen();
