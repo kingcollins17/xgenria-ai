@@ -1,4 +1,6 @@
 // import 'package:xgenria/providers/auth_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import '../../models/models.dart';
 import '../actions/auth_actions.dart';
 import '../actions/base.dart';
@@ -27,6 +29,14 @@ AuthState authReducer(AuthState state, XgenriaAction action) {
             ..token = pd.data.token;
         }
         break;
+      case AuthActionType.logout:
+        state
+          ..isLoading = false
+          ..token = null
+          ..message = 'You have been logged out'
+          ..userData = null;
+        Hive.box('settings').delete('token');
+        
       case AuthActionType.notify:
         if (action.payload is NotifyPayload) {
           final pd = action.payload as NotifyPayload;
@@ -51,6 +61,7 @@ class AuthState {
   bool isLoading;
 
   bool get isAuthenticated => token != null;
+
   AuthState({this.token, this.userData, this.message, this.isLoading = false});
 
   @override

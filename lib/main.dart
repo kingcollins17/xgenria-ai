@@ -23,6 +23,7 @@ import 'package:xgenria/redux/reducers/data_reducer.dart';
 import 'package:xgenria/screens/create_trans.dart';
 import 'package:xgenria/screens/doc_list.dart';
 import 'package:xgenria/screens/image_history.dart';
+import 'package:xgenria/screens/plans.dart';
 import 'package:xgenria/screens/project_detail.dart';
 import 'package:xgenria/screens/read_doc.dart';
 import 'package:xgenria/screens/trans_detail.dart';
@@ -34,8 +35,13 @@ import 'models/models.dart';
 import 'screens/create_document.dart';
 import 'screens/screens.dart';
 import 'theme.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  final settings = await Hive.openBox('settings');
+
+  var store = createStore();
   runApp(ProviderScope(
     child: StoreProvider(
       store: store,
@@ -43,40 +49,54 @@ void main() {
         debugShowCheckedModeBanner: false,
         title: 'Xgenria AI',
         initialRoute: '/',
-        onGenerateRoute: _onGenerateRoute,
+        onGenerateRoute: (routeSettings) =>
+            _onGenerateRoute(routeSettings, store, settings),
         theme: XgenriaTheme.dark,
       ),
     ),
   ));
 }
 
-MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
+MaterialPageRoute _onGenerateRoute(RouteSettings routeSettings,
+    Store<XgenriaState> store, Box<dynamic> settings) {
   Widget page = const SizedBox();
-  switch (settings.name) {
+  switch (routeSettings.name) {
     case '/':
-      page = XOnboard();
+      if (settings.get('hasLaunched') == true) {
+        page = store.state.auth.isAuthenticated ? HomeScreen() : XAuth();
+      } else {
+        page = XOnboard();
+        settings.put('hasLaunched', true);
+        // settings.delete('hasLaunced');
+      }
       break;
     case '/home':
       page = HomeScreen();
       break;
     case '/auth':
-      page = XAuth();
+      page = store.state.auth.isAuthenticated ? HomeScreen() : XAuth();
+      break;
+    case '/plan':
+    case '/plans':
+    case '/subscription':
+    case '/subscriptions':
+      page = SubscriptionPlan();
       break;
     case '/project':
       page = XProject();
       break;
     case 'project-detail':
     case '/project-detail':
-      if (settings.arguments is ProjectData) {
-        page = ProjectDetail(project: settings.arguments as ProjectData);
+      if (routeSettings.arguments is ProjectData) {
+        page = ProjectDetail(project: routeSettings.arguments as ProjectData);
       }
       break;
     case '/chats':
       page = ChatList();
       break;
     case '/chatbox':
-      if (settings.arguments is (ChatData, AccessToken)) {
-        final args = settings.arguments as (ChatData, AccessToken);
+      if (routeSettings.arguments is (ChatData, AccessToken)) {
+        final args = routeSettings.arguments as (ChatData, AccessToken);
         page = ChatDM(chat: args.$1, token: args.$2);
       }
       break;
@@ -88,9 +108,9 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       page = TranscriptionList();
       break;
     case '/trans-detail':
-      if (settings.arguments is TranscriptionData) {
-        page =
-            TranscriptionDetail(data: settings.arguments as TranscriptionData);
+      if (routeSettings.arguments is TranscriptionData) {
+        page = TranscriptionDetail(
+            data: routeSettings.arguments as TranscriptionData);
       }
     case '/create-chat':
       page = CreateChat();
@@ -99,8 +119,8 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       page = ImageScreen();
       break;
     case '/image-result':
-      if (settings.arguments is ImageResultData) {
-        page = ImageResult(data: settings.arguments as ImageResultData);
+      if (routeSettings.arguments is ImageResultData) {
+        page = ImageResult(data: routeSettings.arguments as ImageResultData);
       }
       break;
     case '/image-history':
@@ -113,10 +133,13 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       break;
     case '/create-docs':
     case '/create-doc':
-      if (settings.arguments is (List<Template>, TemplateCategory, int)) {
+      if (routeSettings.arguments is (List<Template>, TemplateCategory, int)) {
         page = CreateDocument(
-            data:
-                settings.arguments as (List<Template>, TemplateCategory, int));
+            data: routeSettings.arguments as (
+          List<Template>,
+          TemplateCategory,
+          int
+        ));
       }
       break;
     case '/doc-list':
@@ -124,8 +147,8 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       break;
     case 'read-doc':
     case '/read-doc':
-      if (settings.arguments is Document) {
-        page = ReadDocument(doc: settings.arguments as Document);
+      if (routeSettings.arguments is Document) {
+        page = ReadDocument(doc: routeSettings.arguments as Document);
       }
       break;
     case '/test':
@@ -135,7 +158,7 @@ MaterialPageRoute _onGenerateRoute(RouteSettings settings) {
       break;
   }
   return MaterialPageRoute(
-    settings: settings,
+    settings: routeSettings,
     builder: (context) => page,
   );
 }
@@ -186,42 +209,18 @@ class _TestAPIState extends State<TestAPI> {
                           decoration: TextDecoration.none,
                         )),
                     Consumer(builder: (context, ref, child) {
-                      final docs =
-                          ref.watch(docNotifierProvider(vm.auth.token!));
                       return Column(
                         children: [
-                          docs.when<Widget>(
-                            data: (data) => Text(
-                              data.toString(),
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white),
-                            ),
-                            error: (Object error, StackTrace stackTrace) =>
-                                Text(stackTrace.toString()),
-                            loading: () =>
-                                SpinKitChasingDots(color: Colors.white),
-                          ),
                           const SizedBox(height: 20),
                           FilledButton(
                             onPressed: () {
                               setState(() {
-                                isLoading = true;
+                                // isLoading = true;
+                                data = Hive.box('settings')
+                                    .get('token')
+                                    .runtimeType;
                               });
-                              final notifier = ref.read(
-                                  docNotifierProvider(vm.auth.token!).notifier);
-                              notifier
-                                  .deleteDoc(
-                                    // name: 'My test third doc',
-                                    // input:
-                                    // 'Generate some random word document about history',
-                                    187,
-                                  )
-                                  .then((value) => setState(() {
-                                        isLoading = false;
-                                        data = value;
-                                      }));
+                              
                             },
                             child: Text('Press me'),
                           ),

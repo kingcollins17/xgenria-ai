@@ -47,6 +47,7 @@ class _ProjectDetailState extends ConsumerState<ProjectDetail> {
                                   size: 30,
                                 ),
                               )),
+                      const SizedBox(height: 20),
                       docs.when(
                         data: (data) => ProjectDocuments(
                             project: widget.project,
@@ -56,6 +57,22 @@ class _ProjectDetailState extends ConsumerState<ProjectDetail> {
                         loading: () => SpinKitRipple(
                             color: Theme.of(context).colorScheme.primary),
                       ),
+                      const SizedBox(height: 15),
+                      trans.when(
+                          data: (data) => data.data == null
+                              ? Text(
+                                  'No transcriptions to show!',
+                                  style: GoogleFonts.poppins(fontSize: 16),
+                                )
+                              : ProjectTranscriptions(
+                                  project: widget.project, data: data.data!),
+                          error: (err, _) =>
+                              Center(child: Text('Something went wrong $err')),
+                          loading: () => SizedBox.shrink()
+                          // SpinKitRipple(
+                          // color: Theme.of(context).colorScheme.primary,
+                          // ),
+                          ),
                       const SizedBox(height: 100),
                     ],
                   ),
@@ -65,7 +82,75 @@ class _ProjectDetailState extends ConsumerState<ProjectDetail> {
   }
 }
 
-class ProjectDocuments extends StatelessWidget {
+class ProjectTranscriptions extends StatelessWidget {
+  const ProjectTranscriptions(
+      {super.key, required this.data, required this.project});
+  final List<TranscriptionData> data;
+  final ProjectData project;
+
+  @override
+  Widget build(BuildContext context) {
+    final projectTrans = data
+        .where((element) =>
+            (element.projectId != null) &&
+            element.projectId == project.projectId)
+        .toList();
+    return Column(
+      children: [
+        Align(
+            alignment: Alignment.centerLeft, child: Text('AI Transcriptions')),
+        const SizedBox(height: 15),
+        ...List.generate(
+            data.length,
+            (index) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed('/trans-detail', arguments: data[index]);
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color(0xFF1A1A1A),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFF080808),
+                              offset: Offset(2, 4),
+                              blurRadius: 4,
+                            )
+                          ]),
+                      child: Row(children: [
+                        Icon(
+                          Icons.mic,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 25,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          data[index].name,
+                          style: GoogleFonts.poppins(fontSize: 14),
+                        )
+                      ]),
+                    ),
+                  ),
+                )),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerRight,
+          child: _AddButton(
+            label: 'Add Transcription',
+            onPressed: () => Navigator.of(context).pushNamed('/create-trans'),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class ProjectDocuments extends StatefulWidget {
   const ProjectDocuments({
     super.key,
     required this.project,
@@ -75,11 +160,16 @@ class ProjectDocuments extends StatelessWidget {
   final List<Document> documents;
 
   @override
+  State<ProjectDocuments> createState() => _ProjectDocumentsState();
+}
+
+class _ProjectDocumentsState extends State<ProjectDocuments> {
+  @override
   Widget build(BuildContext context) {
-    final projectDocuments = documents
+    final projectDocuments = widget.documents
         .where((element) =>
             (element.projectId != null) &&
-            (element.projectId == project.projectId))
+            (element.projectId == widget.project.projectId))
         .toList();
     return Container(
       decoration: BoxDecoration(),
@@ -104,41 +194,47 @@ class ProjectDocuments extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           ...List.generate(
-            documents.length,
+            widget.documents.length,
             (index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                decoration: BoxDecoration(
-                    color: Color(0xFF202020),
-                    boxShadow: [
-                      BoxShadow(blurRadius: 4, color: Color(0xFF131313))
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed('/read-doc',
+                      arguments: widget.documents[index]);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  decoration: BoxDecoration(
+                      color: Color(0xFF202020),
+                      boxShadow: [
+                        BoxShadow(blurRadius: 4, color: Color(0xFF131313))
+                      ],
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.secondary,
+                            )),
+                        child: Icon(
+                          Icons.edit_document,
+                          size: 12,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.documents[index].name,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
                     ],
-                    borderRadius: BorderRadius.circular(5)),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.secondary,
-                          )),
-                      child: Icon(
-                        Icons.edit_document,
-                        size: 12,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      documents[index].name,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -147,6 +243,7 @@ class ProjectDocuments extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: _AddButton(
               label: 'Add Document',
+              onPressed: () => Navigator.of(context).pushNamed('/ai-doc'),
             ),
           )
           // const SizedBox(height: 100),
@@ -195,33 +292,49 @@ class ProjectImages extends StatelessWidget {
                     (index) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5.0),
                           child: Center(
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              height: 120,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF242424),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Image.network(
-                                '$uploadsBaseUrl/${images[index].image}',
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child,
-                                        loadingProgress) =>
-                                    loadingProgress == null
-                                        ? child
-                                        : Center(
-                                            child: SizedBox(
-                                              height: 25,
-                                              width: 25,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 1.4,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                              ),
-                                            ),
-                                          ),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                  '/image-result',
+                                  arguments: (
+                                    data: {
+                                      'url':
+                                          '$uploadsBaseUrl/${images[index].image}'
+                                    },
+                                    message: 'ImageData',
+                                    status: false
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: 120,
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF242424),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Image.network(
+                                  '$uploadsBaseUrl/${images[index].image}',
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) =>
+                                          loadingProgress == null
+                                              ? child
+                                              : Center(
+                                                  child: SizedBox(
+                                                    height: 25,
+                                                    width: 25,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 1.4,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                    ),
+                                                  ),
+                                                ),
+                                ),
                               ),
                             ),
                           ),
@@ -233,6 +346,7 @@ class ProjectImages extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: _AddButton(
               label: 'Add Image',
+              onPressed: () => Navigator.of(context).pushNamed('/gen-image'),
             ),
           )
         ],
@@ -245,13 +359,15 @@ class _AddButton extends StatelessWidget {
   const _AddButton({
     super.key,
     required this.label,
+    this.onPressed,
   });
   final String label;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return FilledButton.icon(
-        onPressed: () {},
+        onPressed: onPressed,
         style: ButtonStyle(
           backgroundColor:
               MaterialStatePropertyAll(Theme.of(context).colorScheme.primary),

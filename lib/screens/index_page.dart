@@ -128,11 +128,15 @@ class IndexPage extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Available Templates',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                          GestureDetector(
+                            // onTap: () =>
+                            // Navigator.of(context).pushNamed('/test'),
+                            child: Text(
+                              'Available Templates',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                           GestureDetector(
@@ -162,35 +166,55 @@ class IndexPage extends ConsumerWidget {
                         data: (data) => Column(
                           children: List.generate(
                               data.categories!.length,
-                              (index) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5.0),
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.9,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 15, horizontal: 10),
-                                      decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          border: Border.all(
-                                            color: Color(0xFF5A5A5A),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            data.categories![index].name,
-                                            style: GoogleFonts.quicksand(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                              (index) => GestureDetector(
+                                    onTap: () {
+                                      if (data.templates != null &&
+                                          data.categories != null) {
+                                        Navigator.of(context).pushNamed(
+                                            '/create-doc',
+                                            arguments: (
+                                              data.templates!
+                                                  .where((element) =>
+                                                      element.categoryId ==
+                                                      data.categories![index]
+                                                          .id)
+                                                  .toList(),
+                                              data.categories![index],
+                                              0,
+                                            ));
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5.0),
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 15, horizontal: 10),
+                                        decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            border: Border.all(
+                                              color: Color(0xFF5A5A5A),
                                             ),
-                                          ),
-                                        ],
+                                            borderRadius:
+                                                BorderRadius.circular(4)),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              data.categories![index].name,
+                                              style: GoogleFonts.quicksand(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   )),

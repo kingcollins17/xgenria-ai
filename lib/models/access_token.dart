@@ -8,15 +8,15 @@ class AccessToken {
   final String value;
 
   @JsonKey(name: 'token_type')
-  final String type;
+  final String? type;
 
   @JsonKey(name: 'expires_in')
-  final Duration expiration;
+  final Duration? expiration;
 
   AccessToken({
-    required this.type,
+    this.type,
     required this.value,
-    required this.expiration,
+    this.expiration,
   });
 
   factory AccessToken.fromJson(Map<String, dynamic> json) =>

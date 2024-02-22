@@ -26,6 +26,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   HoverDestination previous = HoverDestination.home,
       destination = HoverDestination.home;
 
+  bool isNavigatorVisible = true;
+
   @override
   void initState() {
     super.initState();
@@ -68,12 +70,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         })
                     : destination == HoverDestination.projects
                         ? XProject()
-                        : ProfilePage(),
+                        : ProfilePage(
+                            onDrawerChanged: (isOpened) => setState(() {
+                              isNavigatorVisible = !isOpened;
+                            }),
+                          ),
           ),
           Positioned(
             bottom: 5,
             child: HoverMenu(
-              isOpen: true,
+              isOpen: destination != HoverDestination.me,
+              visible: isNavigatorVisible,
               initDestination: destination,
               onChanged: (value) => setState(() {
                 previous = destination;

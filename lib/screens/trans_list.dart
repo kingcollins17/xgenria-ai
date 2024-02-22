@@ -81,8 +81,8 @@ class _TranscriptionListState extends ConsumerState<TranscriptionList> {
                                                       Text(
                                                         data.data![index].name,
                                                         style: GoogleFonts
-                                                            .quicksand(
-                                                          fontSize: 18,
+                                                            .poppins(
+                                                          fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w600,
                                                         ),
@@ -98,7 +98,7 @@ class _TranscriptionListState extends ConsumerState<TranscriptionList> {
                                                               '...';
                                                         }(),
                                                         style: GoogleFonts
-                                                            .quicksand(
+                                                            .poppins(
                                                           fontSize: 14,
                                                           color:
                                                               Color(0xFFCFCFCF),

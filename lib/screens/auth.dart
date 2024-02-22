@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:hive/hive.dart';
 import 'package:redux/redux.dart';
 import 'package:xgenria/models/models.dart';
 import 'package:xgenria/providers/providers.dart';
@@ -28,7 +29,7 @@ class _XAuthState extends ConsumerState<XAuth>
 
   bool isLoading = false;
   String? name, email, password, confirmedPassword;
-  
+
   bool rememberMe = false;
 
   Widget? popUp;
@@ -317,6 +318,14 @@ class _XAuthState extends ConsumerState<XAuth>
             password: password!,
             rememberMe: rememberMe,
             onDone: (p0) {
+              if (p0 is ({String message, AccessToken? token}) &&
+                  p0.token != null) {
+                Hive.box('settings').put('token', {
+                  'type': p0.token!.type,
+                  'value': p0.token!.value,
+                  'expiration': p0.token!.expiration?.inSeconds
+                });
+              }
               _notifyMessage('You are logged in').then(
                   (value) => Navigator.of(context).popAndPushNamed('/home'));
             },
@@ -350,7 +359,10 @@ class _XAuthState extends ConsumerState<XAuth>
   }
 }
 
+
+
 class _InputField extends StatelessWidget {
+  
   const _InputField({
     super.key,
     required this.hint,

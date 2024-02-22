@@ -36,7 +36,7 @@ class _XOnboardState extends State<XOnboard> {
                     // image: AssetImage('asset/images/arcane-bg.jpg'),
                     image: AssetImage('asset/onboard/bg.JPEG'),
                     fit: BoxFit.fill,
-                    opacity: 1,
+                    opacity: 0.2,
                   ),
                 ),
               ),
@@ -169,11 +169,15 @@ class _XOnboardState extends State<XOnboard> {
                             // color: Theme.of(context).colorScheme.secondary,
                           ),
                           // Row(children: [],)
-                          Text(
-                            'Skip',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFFD8D8D8),
-                              fontSize: 16,
+                          GestureDetector(
+                            onTap: () =>
+                                Navigator.popAndPushNamed(context, '/auth'),
+                            child: Text(
+                              'Skip',
+                              style: GoogleFonts.poppins(
+                                color: Color(0xFFD8D8D8),
+                                fontSize: 16,
+                              ),
                             ),
                           )
                         ]),
@@ -196,6 +200,7 @@ class _OnboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -209,15 +214,33 @@ class _OnboardContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SizedBox(height: 20),
-                // Image.asset(
-                //   // 'asset/onboard/ai-coding.png',
-                //   data.image,
-                // ),
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(blurRadius: 30, color: Colors.black),
+                        BoxShadow(
+                            blurRadius: 25,
+                            offset: Offset(0, 5),
+                            color: Theme.of(context).colorScheme.primary),
+                        BoxShadow(
+                            blurRadius: 25,
+                            color: Colors.orangeAccent,
+                            offset: Offset(5, 0))
+                      ]),
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: 220,
+                  child: Image.asset(
+                    data.image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.3,
           width: MediaQuery.of(context).size.width,
@@ -262,23 +285,23 @@ class _ContentData {
 const contents = <_ContentData>[
   _ContentData(
     title: 'AI Image Generator',
-    image: 'asset/onboard/gen-content.png',
+    image: 'asset/images/onboard-1.jpg',
     detail: 'Turn your ideas into stunning visuals with AI-created image,'
         ' share your vision and watch it come to life',
   ),
   _ContentData(
     title: 'AI Content Writer',
-    image: 'asset/onboard/content-writing.png',
+    image: 'asset/images/onboard-2.png',
     detail: 'Generate engaging plagiarism-Free content effortlessly using AI',
   ),
   _ContentData(
       title: 'Speech to Text',
-      image: 'asset/onboard/content-3.png',
+      image: 'asset/images/onboard-3.png',
       detail: 'Transform words into written text harnessing advanced '
           'algorithms for accurate and efficient transcription'),
   _ContentData(
     title: 'AI Code Assistant',
-    image: 'asset/onboard/ai-coding.png',
+    image: 'asset/images/onboard-4.jpg',
     detail: 'Elevate your coding prowess with AI-Generated code snippets, '
         'whether you are a pro, beginner or an expert',
   )

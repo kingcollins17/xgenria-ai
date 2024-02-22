@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -42,8 +43,10 @@ class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
                   children: [
                     const SizedBox(height: 20),
                     Align(
-                        alignment: Alignment.centerRight,
-                        child: _CopyClipboard()),
+                        alignment: Alignment.centerLeft,
+                        child: _CopyClipboard(
+                          text: '${widget.data.name}\n${widget.data.content}',
+                        )),
                     Text(
                       widget.data.name,
                       softWrap: true,
@@ -101,30 +104,71 @@ class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
 class _CopyClipboard extends StatelessWidget {
   const _CopyClipboard({
     super.key,
+    this.text = '',
   });
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 60,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Color(0x3D4489FF),
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(
-          'copy',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(
-              fontSize: 12, color: Theme.of(context).colorScheme.primary),
+    return GestureDetector(
+      onTap: () {
+        Clipboard.setData(ClipboardData(text: text))
+            .then((_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  // width: 100,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  content: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 40),
+                        Container(
+                          height: 20,
+                          width: 100,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Color(0xDFFCFCFC),
+                              borderRadius: BorderRadius.circular(30)),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          child: Text(
+                            'Text copied',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                                fontSize: 12, color: Color(0xED0E0E0E)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )));
+      },
+      child: Container(
+        width: 60,
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: Color(0x3D4489FF),
+          borderRadius: BorderRadius.circular(40),
         ),
-        Icon(
-          Icons.copy_all_rounded,
-          size: 10,
-          color: Theme.of(context).colorScheme.secondary,
-        )
-      ]),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(
+            'copy',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+                fontSize: 12, color: Theme.of(context).colorScheme.primary),
+          ),
+          Icon(
+            Icons.copy_all_rounded,
+            size: 10,
+            color: Theme.of(context).colorScheme.secondary,
+          )
+        ]),
+      ),
     );
   }
 }

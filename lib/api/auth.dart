@@ -144,6 +144,7 @@ abstract class AuthAPI {
       return (status: false, message: e.toString());
     }
   }
+  static Future<dynamic> deleteAccount(Dio dio, AccessToken token) async {}
 }
 
 typedef MessageResponse = ({bool status, String message});

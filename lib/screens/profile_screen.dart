@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -11,12 +12,14 @@ import 'package:hive/hive.dart';
 import 'package:redux/redux.dart';
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/core.dart';
+import 'package:xgenria/widgets/confirm_action.dart';
 import 'package:xgenria/widgets/progress_bar.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, this.onDrawerChanged});
   @override
   ConsumerState<ProfilePage> createState() => _ProfilePageState();
+  final void Function(bool isOpened)? onDrawerChanged;
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
@@ -42,23 +45,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                   const SizedBox(width: 10),
                   user.when(
-                      data: (data) => Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data.data!.name,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                      data: (data) => data.data == null
+                          ? Text(
+                              'Tap to refresh',
+                              style: GoogleFonts.quicksand(fontSize: 16),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data.data!.name,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                data.data!.email,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12, color: Colors.grey),
-                              ),
-                            ],
-                          ),
+                                Text(
+                                  data.data!.email,
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 12, color: Colors.grey),
+                                ),
+                              ],
+                            ),
                       error: (_, __) => Center(child: Text('')),
                       loading: () => Center(
                             child: SpinKitRipple(
@@ -79,6 +87,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       // Text('My ')
                       dashboard.when(
                           data: (data) {
+                            if (data.data == null) {
+                              return Center(
+                                child: Text(
+                                  'Please check your internet connection and refresh',
+                                  style: GoogleFonts.quicksand(fontSize: 16),
+                                ),
+                              );
+                            }
                             final info = <(String, String, String)>[
                               (
                                 'AI Studio',
@@ -172,6 +188,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
             endDrawer: _Drawer(),
+            onEndDrawerChanged: widget.onDrawerChanged,
           );
         });
   }
@@ -198,7 +215,8 @@ class _Drawer extends ConsumerWidget {
         builder: (context, vm) {
           final user = ref.watch(userProvider(vm.auth.token!));
           return Container(
-            width: MediaQuery.of(context).size.width * 0.85,
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height,
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               color: Color(0xFF1B1B1B),
@@ -224,28 +242,31 @@ class _Drawer extends ConsumerWidget {
                 ],
               ),
               Divider(color: Color(0xFF363636)),
-              Container(
-                decoration: BoxDecoration(
-                    color: Color(0xFF292929),
-                    borderRadius: BorderRadius.circular(10)),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Pricing  & Plan'),
-                          Icon(Icons.diamond_sharp, color: Color(0xFFE3FF44)),
-                        ]),
-                    Text(
-                      'Current Plan: Free',
-                      style: GoogleFonts.quicksand(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
-                  ],
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed('/plan'),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Color(0xFF292929),
+                      borderRadius: BorderRadius.circular(10)),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Plans and Pricing'),
+                            Icon(Icons.diamond_sharp, color: Color(0xFFE3FF44)),
+                          ]),
+                      Text(
+                        'Current Plan: ',
+                        style: GoogleFonts.quicksand(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -279,50 +300,93 @@ class _Drawer extends ConsumerWidget {
                   child: _DrawerTile(
                       data: Icons.chat_rounded, label: 'All AI Chats')),
               const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xFF353535),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: Row(
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(
-                      Icons.logout_rounded,
-                      size: 15,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Log out',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
+                    GestureDetector(
+                      onTap: () {
+                        showModal<bool>(
+                            context: context,
+                            builder: (context) {
+                              return ConfirmAction(
+                                  message: 'Are you sure you want to logout');
+                            }).then((value) {
+                          if (value == true) {
+                            vm.dispatch(
+                                AuthAction(type: AuthActionType.logout));
+                            Navigator.popAndPushNamed(context, '/auth');
+                          }
+                          return null;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFF353535),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.logout_rounded,
+                              size: 15,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Log out',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {
+                        showModal<bool>(
+                            context: context,
+                            builder: (context) {
+                              return ConfirmAction(
+                                  message:
+                                      'Are you sure you want to delete your account');
+                            }).then((value) {
+                          if (value == true) {
+                            Navigator.popAndPushNamed(context, '/auth');
+                          }
+                          return null;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0x30E90F0F),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete_forever,
+                              size: 15,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Delete Account',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16, color: Colors.redAccent),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0x30E90F0F),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.delete_forever,
-                      size: 15,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Delete Account',
-                      style: GoogleFonts.poppins(
-                          fontSize: 16, color: Colors.redAccent),
-                    )
-                  ],
-                ),
-              )
+              const SizedBox(height: 15),
             ]),
           );
         });

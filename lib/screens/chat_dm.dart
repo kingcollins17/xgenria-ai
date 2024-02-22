@@ -47,6 +47,7 @@ class _ChatDMState extends ConsumerState<ChatDM> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        
         title: Row(children: [
           SvgPicture.asset(
             'asset/images/logo.svg',
@@ -203,7 +204,6 @@ class _ChatDMState extends ConsumerState<ChatDM> {
               ],
             );
           }),
-      endDrawer: Container(),
     );
   }
 }

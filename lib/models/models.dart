@@ -7,3 +7,4 @@ export 'template.dart';
 export 'user_data.dart';
 export 'chat.dart';
 export 'image.dart';
+export 'transcription.dart';

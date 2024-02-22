@@ -10,9 +10,13 @@ class HoverMenu extends StatefulWidget {
   const HoverMenu(
       {super.key,
       this.isOpen = true,
+      this.visible = true,
       this.onChanged,
+      this.opacity = 1.0,
       this.initDestination = HoverDestination.home});
-  final bool isOpen;
+  final bool isOpen, visible;
+  final double opacity;
+
   final void Function(HoverDestination)? onChanged;
   final HoverDestination initDestination;
 
@@ -38,10 +42,9 @@ class _HoverMenuState extends State<HoverMenu>
     super.didUpdateWidget(oldWidget);
     isOpen = widget.isOpen;
     if (oldWidget.initDestination != widget.initDestination) {
-      setState((){
+      setState(() {
         groupValue = widget.initDestination;
       });
-      
     }
   }
 
@@ -57,65 +60,68 @@ class _HoverMenuState extends State<HoverMenu>
   var groupValue = HoverDestination.home;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: 90,
-      child: Align(
-        alignment: Alignment.center,
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeOutCubic,
-          height: height,
-          width: isOpen ? MediaQuery.of(context).size.width * 0.9 : 70,
-          decoration: BoxDecoration(
-            gradient: isOpen
-                ? null
-                : LinearGradient(colors: [
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.primary
-                  ]),
-            color: const Color(0xFF313131),
-            borderRadius: BorderRadius.circular(radius),
+    return Visibility(
+      visible: widget.visible,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: 90,
+        child: Align(
+          alignment: Alignment.center,
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeOutCubic,
+            height: height,
+            width: isOpen ? MediaQuery.of(context).size.width * 0.9 : 70,
+            decoration: BoxDecoration(
+              gradient: isOpen
+                  ? null
+                  : LinearGradient(colors: [
+                      Theme.of(context).colorScheme.secondary,
+                      Theme.of(context).colorScheme.primary
+                    ]),
+              color: const Color(0xFF313131),
+              borderRadius: BorderRadius.circular(radius),
+            ),
+            child: isOpen
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _IconWrap(
+                        icon: Icons.home_outlined,
+                        selectedIcon: Icons.home_rounded,
+                        value: HoverDestination.home,
+                        groupValue: groupValue,
+                        onPress: navigate,
+                      ),
+                      _IconWrap(
+                        icon: Icons.explore_outlined,
+                        selectedIcon: Icons.explore_rounded,
+                        value: HoverDestination.explore,
+                        groupValue: groupValue,
+                        onPress: navigate,
+                      ),
+                      _IconWrap(
+                        icon: Icons.grid_view_outlined,
+                        selectedIcon: Icons.grid_view_rounded,
+                        value: HoverDestination.projects,
+                        groupValue: groupValue,
+                        onPress: navigate,
+                      ),
+                      _IconWrap(
+                        icon: Icons.person_4_outlined,
+                        selectedIcon: Icons.person_rounded,
+                        value: HoverDestination.me,
+                        groupValue: groupValue,
+                        onPress: navigate,
+                      ),
+                    ],
+                  )
+                : GestureDetector(
+                    onTap: () => setState(() => isOpen = true),
+                    child: Icon(Icons.arrow_back_ios_new_rounded,
+                        size: 15, color: Colors.white),
+                  ),
           ),
-          child: isOpen
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _IconWrap(
-                      icon: Icons.home_outlined,
-                      selectedIcon: Icons.home_rounded,
-                      value: HoverDestination.home,
-                      groupValue: groupValue,
-                      onPress: navigate,
-                    ),
-                    _IconWrap(
-                      icon: Icons.explore_outlined,
-                      selectedIcon: Icons.explore_rounded,
-                      value: HoverDestination.explore,
-                      groupValue: groupValue,
-                      onPress: navigate,
-                    ),
-                    _IconWrap(
-                      icon: Icons.grid_view_outlined,
-                      selectedIcon: Icons.grid_view_rounded,
-                      value: HoverDestination.projects,
-                      groupValue: groupValue,
-                      onPress: navigate,
-                    ),
-                    _IconWrap(
-                      icon: Icons.person_4_outlined,
-                      selectedIcon: Icons.person_rounded,
-                      value: HoverDestination.me,
-                      groupValue: groupValue,
-                      onPress: navigate,
-                    ),
-                  ],
-                )
-              : GestureDetector(
-                  onTap: () => setState(() => isOpen = true),
-                  child: Icon(Icons.arrow_back_ios_new_rounded,
-                      size: 15, color: Colors.white),
-                ),
         ),
       ),
     );
