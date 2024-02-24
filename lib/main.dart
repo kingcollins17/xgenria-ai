@@ -13,6 +13,7 @@ import 'package:xgenria/api/api.dart';
 import 'package:xgenria/api/project.dart';
 import 'package:xgenria/models/transcription.dart';
 import 'package:xgenria/providers/doc_provider.dart';
+import 'package:xgenria/providers/image_provider.dart';
 import 'package:xgenria/providers/project_provider.dart';
 
 import 'package:xgenria/providers/providers.dart';
@@ -119,8 +120,8 @@ MaterialPageRoute _onGenerateRoute(RouteSettings routeSettings,
       page = ImageScreen();
       break;
     case '/image-result':
-      if (routeSettings.arguments is ImageResultData) {
-        page = ImageResult(data: routeSettings.arguments as ImageResultData);
+      if (routeSettings.arguments is ImageData) {
+        page = ImageResult(data: routeSettings.arguments as ImageData);
       }
       break;
     case '/image-history':
@@ -184,6 +185,9 @@ class _TestAPIState extends State<TestAPI> {
       builder: (context, vm) => Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final dio = ref.watch(dioProvider);
+          final images = ref.watch(
+            imagesProvider(vm.auth.token!),
+          );
           return SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -198,11 +202,11 @@ class _TestAPIState extends State<TestAPI> {
                           decoration: TextDecoration.none,
                         )),
                     Text(
-                        // (data as List<dynamic>)
-                        //     .map((e) => TranscriptionData.fromJson(e))
-                        //     .toList()
+                        // (data['data'] as List<dynamic>)
+                        //     .map((e) => PlanData.fromJson(e))
                         //     .toString(),
-                        data.toString(),
+                        '$data',
+                        //ImageData.fromJson(data['data']).toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Color(0xFFCFCFCF),
@@ -215,12 +219,13 @@ class _TestAPIState extends State<TestAPI> {
                           FilledButton(
                             onPressed: () {
                               setState(() {
-                                // isLoading = true;
-                                data = Hive.box('settings')
-                                    .get('token')
-                                    .runtimeType;
+                                isLoading = true;
                               });
-                              
+                              AuthAPI.plan(dio, vm.auth.token!)
+                                  .then((value) => setState(() {
+                                        isLoading = false;
+                                        data = value;
+                                      }));
                             },
                             child: Text('Press me'),
                           ),

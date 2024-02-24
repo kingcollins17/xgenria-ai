@@ -1,12 +1,33 @@
 import 'package:dio/dio.dart';
-import '../models/access_token.dart';
-import '../models/user_data.dart';
+import 'package:xgenria/models/models.dart';
 import '_config.dart' as cfg;
-
 
 typedef RegisterResponse = ({String message, bool status});
 
 abstract class AuthAPI {
+  static Future<({List<PlanData>? data, String message, bool status})> plan(
+    Dio dio,
+    AccessToken token,
+  ) async {
+    try {
+      final response = await dio.get(Uri.https(cfg.domain, '/plans').toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      return (
+        status: response.statusCode == 200,
+        data: response.statusCode == 200
+            ? (response.data['data'] as List<dynamic>)
+                .map((e) => PlanData.fromJson(e))
+                .toList()
+            : null,
+        message: 'Fetched'
+      );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage, data: null);
+    } catch (e) {
+      return (status: false, message: e.runtimeType.toString(), data: null);
+    }
+  }
+
   static Future<({UserData? data, String message, bool status})> user(
       Dio dio, AccessToken token) async {
     try {
@@ -22,11 +43,12 @@ abstract class AuthAPI {
             ? 'Fetched'
             : response.data['message'].toString()
       );
+    } on DioException catch (_) {
+      return (status: false, data: null, message: cfg.connectErrorMessage);
     } catch (e) {
-      return (status: false, data: null, message: e.toString());
+      return (status: false, data: null, message: e.runtimeType.toString());
     }
   }
-
 
   static Future<RegisterResponse> register(
     Dio dio, {
@@ -49,6 +71,8 @@ abstract class AuthAPI {
         status: response.statusCode == 200,
         message: response.data['message'].toString()
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, message: e.toString());
     }
@@ -68,6 +92,8 @@ abstract class AuthAPI {
         status: response.statusCode == 200,
         message: response.data['message'].toString()
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, message: e.toString());
     }
@@ -96,6 +122,8 @@ abstract class AuthAPI {
                   message: "You are Signed in"
                 )
               : (token: null, message: 'Unable to Sign you in');
+    } on DioException catch (_) {
+      return (token: null, message: cfg.connectErrorMessage);
     } catch (e) {
       return (token: null, message: e.toString());
     }
@@ -140,11 +168,25 @@ abstract class AuthAPI {
         status: response.statusCode == 200,
         message: response.data['message'] as String
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, message: e.toString());
     }
   }
-  static Future<dynamic> deleteAccount(Dio dio, AccessToken token) async {}
+
+  static Future<dynamic> deleteAccount(Dio dio, AccessToken token) async {
+    try {
+      final response = await dio.delete(
+          Uri.https(cfg.domain, '/delete-account').toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      return response.data;
+    } on DioException catch (_) {
+      return cfg.connectErrorMessage;
+    } catch (e) {
+      return e;
+    }
+  }
 }
 
 typedef MessageResponse = ({bool status, String message});

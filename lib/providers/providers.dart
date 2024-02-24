@@ -28,3 +28,9 @@ Future<DashboardResponse> dashboard(DashboardRef ref, AccessToken token) async {
 Future<({UserData? data, String message, bool status})> user(
         UserRef ref, AccessToken token) async =>
     AuthAPI.user(ref.read(dioProvider), token);
+
+
+@Riverpod(keepAlive: true)
+Future<({List<PlanData>? data, String message, bool status})> plan(
+        PlanRef ref, AccessToken token) async =>
+    AuthAPI.plan(ref.read(dioProvider), token);

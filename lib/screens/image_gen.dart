@@ -7,10 +7,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
 import 'package:xgenria/api/image.dart';
+import 'package:xgenria/models/models.dart';
+import 'package:xgenria/providers/image_provider.dart';
+import 'package:xgenria/providers/project_provider.dart';
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/actions/base.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/pop_up.dart';
+import 'package:xgenria/widgets/select_project.dart';
 
 class ImageScreen extends ConsumerStatefulWidget {
   const ImageScreen({super.key});
@@ -40,6 +44,8 @@ class _ImageScreenState extends ConsumerState<ImageScreen>
   int variants = 1;
   int lightingIndex = 0;
   int artistIndex = 0;
+
+  ProjectData? project;
 
   Widget? notification;
   bool isLoading = false;
@@ -123,6 +129,8 @@ class _ImageScreenState extends ConsumerState<ImageScreen>
                         cursorColor: Colors.grey,
                         decoration: InputDecoration(
                             border: InputBorder.none,
+                            hintText: 'What would you name this image',
+                            hintStyle: GoogleFonts.quicksand(fontSize: 16),
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 10),
                             focusedBorder: InputBorder.none)),
@@ -352,52 +360,20 @@ class _ImageScreenState extends ConsumerState<ImageScreen>
                               )),
                         )
                       ],
-                      onChanged: (value) => setState(() {
-                        lightingIndex = value ?? lightingIndex;
-                      }),
+                      onChanged: (value) => setState(
+                        () => lightingIndex = value ?? lightingIndex,
+                      ),
                     ),
+                  ),
+                  const SizedBox(height: 30),
+                  SelectProjectInput(
+                    onChanged: (value) => setState(() => project = value),
                   ),
                   const SizedBox(height: 20),
                   StoreConnector<XgenriaState, _ViewModel>(
                     converter: (store) => _ViewModel(store),
                     builder: (context, vm) => GestureDetector(
-                      onTap: () {
-                        // Navigator.of(context).pushNamed('/image-result');
-
-                        if (!isLoading) {
-                          if (name != null && input != null) {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            ImageAPI.createImage(
-                                    ref.read(dioProvider), vm.auth.token!,
-                                    input: input!,
-                                    name: name!,
-                                    style: styles[currentStyleIndex].$2,
-                                    size:
-                                        '${sizes[currentSizeIndex].$1}x${sizes[currentSizeIndex].$2}',
-                                    lighting: lighting[lightingIndex],
-                                    artist: artists[artistIndex],
-                                    variants: variants)
-                                .then((result) {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              result.data != null
-                                  ? notify(result.message).then((value) =>
-                                      Navigator.of(context).pushNamed(
-                                          '/image-result',
-                                          arguments: result))
-                                  : notify(result.message);
-                            });
-                          } else {
-                            notify(
-                                'The name field and input field are required');
-                          }
-                        } else {
-                          notify('Please wait ...');
-                        }
-                      },
+                      onTap: () => _generate(vm, context),
                       child: Container(
                         alignment: Alignment.center,
                         padding:
@@ -438,9 +414,49 @@ class _ImageScreenState extends ConsumerState<ImageScreen>
     );
   }
 
-  Future<dynamic> notify(String message) {
+  void _generate(_ViewModel vm, BuildContext context) async {
+    if (!isLoading) {
+      if (name != null && input != null) {
+        // setState(() => isLoading = true);
+        _notify('Creating your image', loading: true);
+        final size =
+            '${sizes[currentSizeIndex].$1}x${sizes[currentSizeIndex].$2}';
+        final res = await ImageAPI.createImage(
+            ref.read(dioProvider), vm.auth.token!,
+            input: input!,
+            name: name!,
+            style: styles[currentStyleIndex].$2,
+            size: size,
+            lighting: lighting[lightingIndex],
+            artist: artists[artistIndex],
+            variants: variants,
+            projectId: project?.projectId);
+        _notify('Image created, Please wait ...');
+        if (res.status && res.data!.keys.contains('id')) {
+          ref.invalidate(imagesProvider);
+          ImageAPI.readImage(
+            ref.read(dioProvider),
+            vm.auth.token!,
+            res.data!['id'],
+          ).then((value) => Navigator.of(context).popAndPushNamed(
+                '/image-result',
+                arguments: value.data,
+              ));
+        }
+      } else {
+        _notify(
+          'The name field and input field are required',
+        );
+      }
+    } else {
+      _notify('Please wait ...');
+    }
+  }
+
+  Future<dynamic> _notify(String message, {bool? loading}) {
     setState(() {
       notification = PopUp(animation: controller, message: message);
+      isLoading = loading ?? isLoading;
     });
     return showPopUp(controller);
   }

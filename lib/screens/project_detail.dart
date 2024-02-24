@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -288,7 +288,7 @@ class ProjectImages extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               children: [
                 ...List.generate(
-                    images.length,
+                    projectImages.length,
                     (index) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5.0),
                           child: Center(
@@ -296,14 +296,7 @@ class ProjectImages extends StatelessWidget {
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                   '/image-result',
-                                  arguments: (
-                                    data: {
-                                      'url':
-                                          '$uploadsBaseUrl/${images[index].image}'
-                                    },
-                                    message: 'ImageData',
-                                    status: false
-                                  ),
+                                    arguments: projectImages[index]
                                 );
                               },
                               child: Container(
@@ -315,7 +308,8 @@ class ProjectImages extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Image.network(
-                                  '$uploadsBaseUrl/${images[index].image}',
+                                  // '$uploadsBaseUrl/${images[index].image}',
+                                  projectImages[index].url,
                                   fit: BoxFit.cover,
                                   loadingBuilder:
                                       (context, child, loadingProgress) =>

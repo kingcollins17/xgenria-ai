@@ -10,6 +10,7 @@ import 'package:xgenria/screens/document.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:xgenria/widgets/pop_up.dart';
+import 'package:xgenria/widgets/select_project.dart';
 import '../providers/providers.dart';
 import '../api/api.dart';
 
@@ -30,6 +31,8 @@ class _CreateDocumentState extends ConsumerState<CreateDocument>
   int currentTemplateIndex = 0;
   int variants = 1;
   int creativity = 5;
+
+  ProjectData? project;
 
   String? name, input;
 
@@ -114,7 +117,8 @@ class _CreateDocumentState extends ConsumerState<CreateDocument>
                                     child: Text(
                                       // category.$3[index],
                                       widget.data.$1[index].name,
-                                      style: TextStyle(fontSize: 14),
+                                      style:
+                                          GoogleFonts.quicksand(fontSize: 14),
                                     ),
                                   ),
                                 ),
@@ -227,6 +231,10 @@ class _CreateDocumentState extends ConsumerState<CreateDocument>
                               onChanged: (value) => setState(() {})),
                         ),
                         const SizedBox(height: 20),
+                        SelectProjectInput(
+                          onChanged: (data) => setState(() => project = data),
+                        ),
+                        const SizedBox(height: 20),
                         GestureDetector(
                           onTap: () {
                             if (name != null && input != null) {
@@ -241,7 +249,8 @@ class _CreateDocumentState extends ConsumerState<CreateDocument>
                                       name: name!,
                                       input: input!,
                                       templateId: widget
-                                          .data.$1[currentTemplateIndex].id)
+                                          .data.$1[currentTemplateIndex].id,
+                                      projectId: project?.projectId)
                                   .then((value) {
                                 _notify(value.$2);
                                 if (value.$1 && value.$3 != null) {

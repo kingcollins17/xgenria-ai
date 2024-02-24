@@ -129,8 +129,8 @@ class IndexPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            // onTap: () =>
-                            // Navigator.of(context).pushNamed('/test'),
+                            onTap: () =>
+                                Navigator.of(context).pushNamed('/test'),
                             child: Text(
                               'Available Templates',
                               style: GoogleFonts.poppins(
@@ -217,7 +217,8 @@ class IndexPage extends ConsumerWidget {
                                         ),
                                       ),
                                     ),
-                                  )),
+                                  ))
+                            ..add(SizedBox(height: 100)),
                         ),
                         error: (Object error, StackTrace stackTrace) => Center(
                           child: Text('Please refresh'),

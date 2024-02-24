@@ -5,3 +5,4 @@ export 'doc.dart';
 export 'image.dart';
 export 'project.dart';
 export 'transcription.dart';
+export '_config.dart';

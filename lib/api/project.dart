@@ -32,6 +32,8 @@ class ProjectAPI {
                 .toList()
             : null
       );
+    } on DioException catch (_) {
+      return (status: false, data: null, message: cfg.connectErrorMessage);
     } on TypeError catch (e) {
       return (status: false, data: null, message: e.toString());
     }
@@ -55,6 +57,8 @@ class ProjectAPI {
             ? 'Project $name created successfully'
             : response.data['message'].toString()
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage, data: null);
     } catch (e) {
       return (status: false, data: null, message: e.toString());
     }
@@ -71,6 +75,8 @@ class ProjectAPI {
         status: response.statusCode == 200,
         message: response.data['message'].toString(),
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, message: e.toString());
     }

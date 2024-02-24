@@ -7,3 +7,4 @@ export 'document.dart';
 export 'home_screen.dart';
 export 'image_result.dart';
 export 'chat_dm.dart';
+export 'password.dart';

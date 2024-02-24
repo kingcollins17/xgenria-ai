@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_interpolation_to_compose_strings, no_leading_underscores_for_local_identifiers
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +10,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:redux/redux.dart';
+import 'package:xgenria/api/dash_board.dart';
+import 'package:xgenria/models/models.dart';
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/confirm_action.dart';
@@ -30,6 +32,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         builder: (context, vm) {
           final user = ref.watch(userProvider(vm.auth.token!));
           final dashboard = ref.watch(dashboardProvider(vm.auth.token!));
+          final plans = ref.watch(planProvider(vm.auth.token!));
+
+          // ({UserData? data, String message, bool status})
           return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
@@ -46,9 +51,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   const SizedBox(width: 10),
                   user.when(
                       data: (data) => data.data == null
-                          ? Text(
-                              'Tap to refresh',
-                              style: GoogleFonts.quicksand(fontSize: 16),
+                          ? GestureDetector(
+                              onTap: () => ref.invalidate(userProvider),
+                              child: Text(
+                                'Tap to refresh',
+                                style: GoogleFonts.quicksand(fontSize: 16),
+                              ),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,8 +77,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             ),
                       error: (_, __) => Center(child: Text('')),
                       loading: () => Center(
-                            child: SpinKitRipple(
-                              color: Theme.of(context).colorScheme.primary,
+                            child: SpinKitThreeInOut(
+                              size: 15,
+                              color: Colors.white,
                             ),
                           ))
                 ],
@@ -78,119 +87,157 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
             body: SingleChildScrollView(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
-                child: Builder(builder: (context) {
-                  return Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      // Text('My ')
-                      dashboard.when(
-                          data: (data) {
-                            if (data.data == null) {
-                              return Center(
-                                child: Text(
-                                  'Please check your internet connection and refresh',
-                                  style: GoogleFonts.quicksand(fontSize: 16),
-                                ),
-                              );
-                            }
-                            final info = <(String, String, String)>[
-                              (
-                                'AI Studio',
-                                '${data.data!.totalDocuments} Total Documents',
-                                ('${data.data!.availableWords} '
-                                    'words available')
-                              ),
-                              (
-                                'Images',
-                                '${data.data!.images.length} Total Images',
-                                '${data.data!.availableImages} images available'
-                              ),
-                              (
-                                'Transcriptions',
-                                '${data.data!.transcriptions.length} Total transcriptions',
-                                '${data.data!.availableTranscriptions}'
-                                    ' transcription available'
-                              ),
-                            ];
-                            return Wrap(
-                              spacing: 4,
-                              runSpacing: 5,
-                              children: [
-                                ...List.generate(
-                                    info.length,
-                                    (index) => Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 2.0, vertical: 2),
-                                          child: Container(
-                                              constraints: BoxConstraints(
-                                                minHeight: 100,
-                                                minWidth: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.42,
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10, vertical: 15),
-                                              decoration: BoxDecoration(
-                                                  color: Color(0xFF292929),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5)),
-                                              child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      info[index].$1,
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 20),
-                                                    Text(
-                                                      info[index].$2,
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              fontSize: 12),
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    // ProgressBar(),
-                                                    // const SizedBox(height: 10),
-                                                    Text(
-                                                      info[index].$3,
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 12,
-                                                      ),
-                                                    )
-                                                  ])),
-                                        ))
-                              ],
-                            );
-                          },
-                          error: (_, __) => Center(
-                                child: Text('Pls refresh'),
-                              ),
-                          loading: () => Center(
-                                child: SpinKitRipple(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              )),
-
-                      const SizedBox(height: 100)
-                    ],
-                  );
-                }),
-              ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 15),
+                  child: user.when(
+                      data: (userData) => Center(
+                            child: plans.when(
+                                data: (planData) => dashboard.when(
+                                    data: (data) => _AccountSummary(
+                                          dashboard: data.data,
+                                          userData: userData.data,
+                                          plans: planData.data,
+                                        ),
+                                    error: (_, __) => Center(
+                                          child: Text(
+                                            'Please check your internet connection and try again',
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 16),
+                                          ),
+                                        ),
+                                    loading: () => Center(
+                                          child: SpinKitRipple(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        )),
+                                error: (_, __) => Center(),
+                                loading: () => Center()),
+                          ),
+                      error: (_, __) => Center(),
+                      loading: () => Center())),
             ),
             endDrawer: _Drawer(),
             onEndDrawerChanged: widget.onDrawerChanged,
           );
         });
+  }
+}
+
+class _AccountSummary extends StatelessWidget {
+  const _AccountSummary({
+    super.key,
+    required this.dashboard,
+    required this.userData,
+    required this.plans,
+  });
+
+  final DashboardData? dashboard;
+  final UserData? userData;
+  final List<PlanData>? plans;
+
+  @override
+  Widget build(BuildContext context) {
+    if (dashboard != null && plans != null && userData != null) {
+      final _currentPlan = plans!.firstWhere(
+        (element) => element.planId == int.parse(userData!.planId!),
+      );
+      final info = <(String, String, String)>[
+        (
+          'AI Studio',
+          '${dashboard!.totalDocuments} Total Documents',
+          (_currentPlan.name == 'Elite'
+              ? 'Unlimited Documents'
+              : '${_currentPlan.planSettings.documentsLimit}')
+        ),
+        (
+          'Images',
+          '${dashboard!.images.length} Total Images',
+          (_currentPlan.name == 'Elite'
+              ? 'Unlimited Images'
+              : '${_currentPlan.planSettings.imagesPerMonthLimit} left')
+        ),
+        (
+          'Transcriptions',
+          '${dashboard!.transcriptions.length} Total transcriptions',
+          (_currentPlan.name == 'Elite'
+              ? 'Unlimited Transcriptions'
+              : '${_currentPlan.planSettings.transcriptionsPerMonthLimit} left')
+        ),
+        (
+          'AI Chats',
+          '',
+          (_currentPlan.name == 'Elite'
+              ? 'Unlimited AI Chats'
+              : '${_currentPlan.planSettings.chatsPerMonthLimit} left')
+        ),
+      ];
+      return Wrap(
+        spacing: 4,
+        runSpacing: 5,
+        children: [
+          ...List.generate(
+              info.length,
+              (index) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 2.0, vertical: 2),
+                    child: _DetailBox(info: info[index]),
+                  ))
+        ],
+      );
+    }
+
+    return Center(
+        child: Text(
+      'Unable to fetch your details at this moment',
+      style: GoogleFonts.poppins(
+        fontSize: 16,
+      ),
+    ));
+  }
+}
+
+class _DetailBox extends StatelessWidget {
+  const _DetailBox({
+    super.key,
+    required this.info,
+  });
+
+  final (String, String, String) info;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        constraints: BoxConstraints(
+          minHeight: 100,
+          minWidth: MediaQuery.of(context).size.width * 0.4,
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        decoration: BoxDecoration(
+            color: Color(0xFF292929), borderRadius: BorderRadius.circular(5)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            info.$1,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            info.$2,
+            style: GoogleFonts.poppins(fontSize: 12),
+          ),
+          const SizedBox(height: 4),
+          // ProgressBar(),
+          // const SizedBox(height: 10),
+          Text(
+            info.$3,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+            ),
+          )
+        ]));
   }
 }
 
@@ -214,6 +261,7 @@ class _Drawer extends ConsumerWidget {
         converter: (store) => _ViewModel(store),
         builder: (context, vm) {
           final user = ref.watch(userProvider(vm.auth.token!));
+          final plans = ref.watch(planProvider(vm.auth.token!));
           return Container(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height,
@@ -242,33 +290,56 @@ class _Drawer extends ConsumerWidget {
                 ],
               ),
               Divider(color: Color(0xFF363636)),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pushNamed('/plan'),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Color(0xFF292929),
-                      borderRadius: BorderRadius.circular(10)),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Plans and Pricing'),
-                            Icon(Icons.diamond_sharp, color: Color(0xFFE3FF44)),
-                          ]),
-                      Text(
-                        'Current Plan: ',
-                        style: GoogleFonts.quicksand(
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.primary,
+              user.when(
+                  data: (userData) => userData.data == null
+                      ? Center()
+                      : GestureDetector(
+                          onTap: () => Navigator.of(context).pushNamed('/plan'),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Color(0xFF292929),
+                                borderRadius: BorderRadius.circular(10)),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Plans and Pricing'),
+                                      Icon(Icons.diamond_sharp,
+                                          color: Color(0xFFE3FF44)),
+                                    ]),
+                                Text(
+                                  'Current Plan: ' +
+                                      plans.when(
+                                          data: (data) => data.data!
+                                              .firstWhere((element) =>
+                                                  element.planId ==
+                                                  int.parse(
+                                                    userData.data!.planId!,
+                                                  ))
+                                              .name,
+                                          error: (_, __) => '',
+                                          loading: () => ' '),
+                                  style: GoogleFonts.quicksand(
+                                    fontSize: 14,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+                  error: (_, __) => Text(
+                        'Unable to load user data!, please check your internet connection and try again',
+                        style: GoogleFonts.poppins(fontSize: 14),
+                      ),
+                  loading: () =>
+                      SpinKitThreeInOut(color: Colors.white, size: 15)),
               const SizedBox(height: 20),
               Text(
                 'Creations',

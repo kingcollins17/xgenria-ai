@@ -16,6 +16,7 @@ import 'package:xgenria/providers/project_provider.dart';
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/pop_up.dart';
+import '../widgets/widgets.dart';
 
 class CreateTranscription extends ConsumerStatefulWidget {
   const CreateTranscription({super.key});
@@ -54,7 +55,7 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
     FilePicker.platform
         .pickFiles(
           dialogTitle: 'Pick file to Transcribe',
-          type: FileType.any,
+          type: FileType.audio,
         )
         .then((value) => setState(() {
               isLoading = false;
@@ -122,7 +123,7 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
                       onTap: _pickFile,
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                            EdgeInsets.symmetric(horizontal: 18, vertical: 22),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             color: Color(0xFF2C2C2C),
@@ -144,6 +145,7 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
                                 color: Color(0xFFADADAD),
                               ),
                             ),
+                           
                             Icon(
                               Icons.upload_rounded,
                               size: 20,
@@ -153,33 +155,9 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
                         ),
                       ),
                     ),
-                    if (projects.hasValue) const SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Project',
-                          style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white)),
+                    SelectProjectInput(
+                      onChanged: (data) => project = data,
                     ),
-                    const SizedBox(height: 10),
-                    projects.when(
-                        data: (data) => DropdownButtonFormField(
-                            items: List.generate(
-                                data.data!.length,
-                                (index) => DropdownMenuItem(
-                                    value: index,
-                                    child: Text(
-                                      data.data![index].name,
-                                      style:
-                                          GoogleFonts.quicksand(fontSize: 14),
-                                    ))),
-                            onChanged: (value) => setState(() {
-                                  project = data.data![value ?? 0];
-                                  currentProject = value ?? currentProject;
-                                })),
-                        error: (_, __) => Text(''),
-                        loading: () => Text('Please wait ..')),
                     const SizedBox(height: 10),
                     Expanded(
                         child: Align(
@@ -190,7 +168,9 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
                             setState(() => isLoading = true);
                             TranscriptionAPI.create(
                                     ref.read(dioProvider), vm.auth.token!,
-                                    name: name!, file: file!)
+                                    name: name!,
+                                    file: file!,
+                                    projectId: project?.projectId)
                                 .then((value) {
                               setState(() {
                                 notification = PopUp(

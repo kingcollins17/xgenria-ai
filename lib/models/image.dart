@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../api/api.dart';
 
 part 'image.g.dart';
-
 
 typedef ImageResultData = ({
   Map<String, dynamic>? data,
@@ -27,6 +27,8 @@ class ImageData {
 
   @JsonKey(name: 'last_datetime')
   final DateTime? lastDatetime;
+
+  String get url => '$uploadsBaseUrl/$image';
 
   factory ImageData.fromJson(Map<String, dynamic> json) =>
       _$ImageDataFromJson(json);

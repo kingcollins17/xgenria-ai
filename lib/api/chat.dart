@@ -1,5 +1,3 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:xgenria/models/chat.dart';
 import '../models/access_token.dart';
@@ -39,6 +37,8 @@ abstract class ChatAPI {
             ? 'Fetched chats'
             : response.data['message'].toString()
       );
+    } on DioException catch (_) {
+      return (status: false, data: null, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, data: null, message: e.toString());
     }
@@ -60,6 +60,8 @@ abstract class ChatAPI {
                 .toList()
             : null
       );
+    } on DioException catch (_) {
+      return (status: false, data: null, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, data: null, message: e.toString());
     }
@@ -81,17 +83,22 @@ abstract class ChatAPI {
             : null
       );
       // return response.data;
+    } on DioException catch (_) {
+      return (status: false, data: null, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, data: null, message: e.toString());
     }
   }
 
   static Future<CreateChatResponse> createChat(Dio dio, AccessToken token,
-      {required String chatName}) async {
+      {required String chatName, int? projectId}) async {
     try {
       final response =
           await dio.post(Uri.https(cfg.domain, '/chat/create').toString(),
-              data: {'name': chatName},
+          data: {
+            'name': chatName,
+            if (projectId != null) 'project_id': projectId
+          },
               options: Options(
                 headers: {'Authorization': 'Bearer $token'},
               ));
@@ -104,6 +111,9 @@ abstract class ChatAPI {
             ? response.data['data']['id'] as int
             : null
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage, id: null);
+
     } catch (e) {
       return (status: false, message: e.toString(), id: null);
     }
@@ -120,6 +130,8 @@ abstract class ChatAPI {
         status: response.statusCode == 200,
         message: response.data['message'].toString()
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
       return (status: false, message: e.toString());
     }

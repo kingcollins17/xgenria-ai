@@ -32,12 +32,18 @@ abstract class DocumentAPI {
     AccessToken token, {
     required String name,
     int type = 38,
+    int? projectId,
     required String text,
   }) async {
     try {
       final response = await dio.post(
         Uri.https(cfg.domain, '/document/create').toString(),
-        data: {'name': name, 'type': type, 'text': text},
+        data: {
+          'name': name,
+          'type': type,
+          'text': text,
+          if (projectId != null) 'project_id': projectId
+        },
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 

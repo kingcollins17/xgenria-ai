@@ -25,18 +25,23 @@ abstract class TranscriptionAPI {
             : null,
         message: 'Fetched'
       );
+    } on DioException catch (exp) {
+      return (status: false, message: cfg.connectErrorMessage, data: null);
     } catch (e) {
-      return (status: false, message: e.toString(), data: null);
+      return (status: false, message: 'Something went wrong', data: null);
     }
   }
 
   static Future<CreateTranscriptionResp> create(Dio dio, AccessToken token,
-      {required String name, required File file}) async {
+      {required String name, required File file, int? projectId}) async {
     try {
       var form = FormData();
       form
         ..fields.add(MapEntry('name', name))
         ..files.add(MapEntry('file', await MultipartFile.fromFile(file.path)));
+      if (projectId != null) {
+        form.fields.add(MapEntry('project_id', '$projectId'));
+      }
 
       final response = await dio.post(
           Uri.https(cfg.domain, '/transcription/create').toString(),
@@ -49,13 +54,38 @@ abstract class TranscriptionAPI {
             ? int.parse(response.data['data']['id'].toString())
             : null
       );
+    } on DioException catch (_) {
+      return (status: false, message: cfg.connectErrorMessage, id: null);
     } catch (e) {
       return (status: false, message: e.toString(), id: null);
     }
   }
 
+  static Future<dynamic> readTranscript(
+      Dio dio, AccessToken token, int id) async {
+    try {
+      final response = await dio.get(
+          Uri.https(cfg.domain, '/transcription/$id').toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      return response.data;
+    } on DioException catch (_) {
+      return cfg.connectErrorMessage;
+    } catch (e) {
+      return e;
+    }
+  }
+
   static Future<dynamic> delete(Dio dio, AccessToken token,
       {required int id}) async {
-    try {} catch (e) {}
+    try {
+      final response = await dio.delete(
+          Uri.https(cfg.domain, '/transcription/$id/delete').toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      return response.data;
+    } on DioException catch (_) {
+      return cfg.connectErrorMessage;
+    } catch (e) {
+      return e;
+    }
   }
 }

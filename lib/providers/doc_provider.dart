@@ -18,9 +18,11 @@ class DocNotifier extends _$DocNotifier {
   Future<(bool, String, int?)> createDoc(
       {required String name,
       required String input,
-      int templateId = 38}) async {
+    int templateId = 38,
+    int? projectId,
+  }) async {
     final res = await DocumentAPI.createDoc(ref.read(dioProvider), token,
-        name: name, text: input, type: templateId);
+        name: name, text: input, type: templateId, projectId: projectId);
 
     if (res.status) {
       ref.invalidate(docNotifierProvider);
