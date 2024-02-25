@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:xgenria/models/models.dart';
 import 'package:xgenria/providers/doc_provider.dart';
 import 'package:xgenria/redux/core.dart';
@@ -45,18 +46,30 @@ class _ReadDocumentState extends ConsumerState<ReadDocument> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  Text(
-                    widget.doc.name,
-                    style: GoogleFonts.poppins(
-                        fontSize: 24, fontWeight: FontWeight.w500),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.doc.name,
+                        style: GoogleFonts.poppins(
+                            fontSize: 24, fontWeight: FontWeight.w500),
+                      ),
+                      GestureDetector(
+                        onTap: () => Share.share(
+                            widget.doc.name + '\n' + widget.doc.content),
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0x229E9E9E),
+                              border:
+                                  Border.all(width: 0.4, color: Colors.white)),
+                          child:
+                              Icon(Icons.share, size: 20, color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                  Text(
-                    widget.doc.content,
-                    style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.w300),
-                  ),
-                  const SizedBox(height: 10),
                   Text(
                     () {
                       final d = widget.doc.datetime!;
@@ -81,6 +94,15 @@ class _ReadDocumentState extends ConsumerState<ReadDocument> {
                     style:
                         GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                   ),
+                  const SizedBox(height: 30),
+                  Text(
+                    widget.doc.content,
+                    style: GoogleFonts.poppins(
+                        fontSize: 14, fontWeight: FontWeight.w300),
+                  ),
+                  const SizedBox(height: 10),
+                 
+                  
                   const SizedBox(height: 150),
                 ],
               ),

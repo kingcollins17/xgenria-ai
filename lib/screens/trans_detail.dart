@@ -10,6 +10,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:xgenria/models/transcription.dart';
 import 'package:xgenria/providers/trans_provider.dart';
 import 'package:xgenria/redux/core.dart';
+import 'package:xgenria/widgets/pop_up.dart';
 
 class TranscriptionDetail extends ConsumerStatefulWidget {
   const TranscriptionDetail({super.key, required this.data});
@@ -19,8 +20,32 @@ class TranscriptionDetail extends ConsumerStatefulWidget {
       _TranscriptionDetailState();
 }
 
-class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
+class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail>
+    with SingleTickerProviderStateMixin {
   bool isLoading = false;
+  late AnimationController _controller;
+
+  PopUp? notification;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _notify(String message, {bool? loading}) {
+    setState(() {
+      isLoading = loading ?? isLoading;
+      notification = PopUp(animation: _controller, message: message);
+    });
+    return showPopUp(_controller);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -88,16 +113,15 @@ class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
                 builder: (context, vm) {
                   return FilledButton.icon(
                     onPressed: () {
-                      setState(() => isLoading = true);
+                      _notify('Deleting ${widget.data.name} ...');
                       final notifier = ref.read(
                         transNotifierProvider(vm.auth.token!).notifier,
                       );
 
-                      notifier
-                          .delete(widget.data.id)
-                          .then((value) => setState(() {
-                                isLoading = false;
-                              }));
+                      notifier.delete(widget.data.id).then((value) {
+                        _notify(value.message, loading: false).then((_) =>
+                            value.status ? Navigator.pop(context) : null);
+                      });
                     },
                     style: ButtonStyle(
                         fixedSize: MaterialStatePropertyAll(
@@ -114,7 +138,12 @@ class _TranscriptionDetailState extends ConsumerState<TranscriptionDetail> {
                   );
                 }),
           ),
-        )
+        ),
+        if (notification != null)
+          Positioned(
+              top: 20,
+              width: MediaQuery.of(context).size.width,
+              child: Center(child: notification!)),
       ],
     );
   }

@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:redux/redux.dart';
+import 'package:xgenria/api/api.dart';
 import 'package:xgenria/api/dash_board.dart';
 import 'package:xgenria/models/models.dart';
 import 'package:xgenria/providers/providers.dart';
@@ -140,36 +141,40 @@ class _AccountSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     if (dashboard != null && plans != null && userData != null) {
       final _currentPlan = plans!.firstWhere(
-        (element) => element.planId == int.parse(userData!.planId!),
+        (element) => element.planId == (int.tryParse(userData!.planId!) ?? 2),
       );
-      final info = <(String, String, String)>[
+      final info = <(String, String, String, String)>[
         (
           'AI Studio',
           '${dashboard!.totalDocuments} Total Documents',
           (_currentPlan.name == 'Elite'
               ? 'Unlimited Documents'
-              : '${_currentPlan.planSettings.documentsLimit}')
+              : '${_currentPlan.planSettings.documentsLimit} Documents'),
+          '/doc-list',
         ),
         (
           'Images',
           '${dashboard!.images.length} Total Images',
           (_currentPlan.name == 'Elite'
               ? 'Unlimited Images'
-              : '${_currentPlan.planSettings.imagesPerMonthLimit} left')
+              : '${_currentPlan.planSettings.imagesPerMonthLimit} left'),
+          '/image-history'
         ),
         (
           'Transcriptions',
           '${dashboard!.transcriptions.length} Total transcriptions',
           (_currentPlan.name == 'Elite'
               ? 'Unlimited Transcriptions'
-              : '${_currentPlan.planSettings.transcriptionsPerMonthLimit} left')
+              : '${_currentPlan.planSettings.transcriptionsPerMonthLimit} left'),
+          '/trans-list'
         ),
         (
           'AI Chats',
           '',
           (_currentPlan.name == 'Elite'
               ? 'Unlimited AI Chats'
-              : '${_currentPlan.planSettings.chatsPerMonthLimit} left')
+              : '${_currentPlan.planSettings.chatsPerMonthLimit} left'),
+          '/chats'
         ),
       ];
       return Wrap(
@@ -181,7 +186,10 @@ class _AccountSummary extends StatelessWidget {
               (index) => Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 2.0, vertical: 2),
-                    child: _DetailBox(info: info[index]),
+                    child: GestureDetector(
+                        onTap: () =>
+                            Navigator.of(context).pushNamed(info[index].$4),
+                        child: _DetailBox(info: info[index])),
                   ))
         ],
       );
@@ -203,7 +211,7 @@ class _DetailBox extends StatelessWidget {
     required this.info,
   });
 
-  final (String, String, String) info;
+  final (String, String, String, String) info;
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +222,15 @@ class _DetailBox extends StatelessWidget {
         ),
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         decoration: BoxDecoration(
-            color: Color(0xFF292929), borderRadius: BorderRadius.circular(5)),
+            color: Color(0xFF292929),
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 3,
+                offset: Offset(2, 4),
+                color: Color(0xA6000000),
+              )
+            ]),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
             info.$1,
@@ -315,13 +331,23 @@ class _Drawer extends ConsumerWidget {
                                 Text(
                                   'Current Plan: ' +
                                       plans.when(
-                                          data: (data) => data.data!
-                                              .firstWhere((element) =>
-                                                  element.planId ==
-                                                  int.parse(
-                                                    userData.data!.planId!,
-                                                  ))
-                                              .name,
+                                          data: (data) {
+                                            if (int.tryParse(
+                                                    userData.data?.planId ??
+                                                        'Free') !=
+                                                null) {
+                                              var _currentPlan = data.data!
+                                                  .firstWhere((element) =>
+                                                      element.planId ==
+                                                      int.tryParse(
+                                                        userData.data!.planId!,
+                                                      ));
+                                              return _currentPlan.name;
+                                            }
+
+                                            return userData.data!.planId
+                                                .toString();
+                                          },
                                           error: (_, __) => '',
                                           loading: () => ' '),
                                   style: GoogleFonts.quicksand(
@@ -370,6 +396,17 @@ class _Drawer extends ConsumerWidget {
                   },
                   child: _DrawerTile(
                       data: Icons.chat_rounded, label: 'All AI Chats')),
+              Divider(color: Color(0xFF4E4E4E)),
+              TextButton.icon(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed('/change-password'),
+                  style: ButtonStyle(
+                      foregroundColor: MaterialStatePropertyAll(Colors.white)),
+                  icon: Icon(Icons.lock_outline_rounded, size: 25),
+                  label: Text(
+                    'Change password',
+                    style: GoogleFonts.poppins(fontSize: 14),
+                  )),
               const SizedBox(height: 20),
               Expanded(
                 child: Column(
@@ -418,15 +455,22 @@ class _Drawer extends ConsumerWidget {
                     const SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
-                        showModal<bool>(
+                        showModal<String>(
                             context: context,
                             builder: (context) {
-                              return ConfirmAction(
-                                  message:
-                                      'Are you sure you want to delete your account');
-                            }).then((value) {
-                          if (value == true) {
-                            Navigator.popAndPushNamed(context, '/auth');
+                              return DeleteAccountConfirmation();
+                            }).then((password) {
+                          if (password != null) {
+                            // Navigator.popAndPushNamed(context, '/auth');
+                            AuthAPI.deleteAccount(ref.read(dioProvider),
+                                    vm.auth.token!, password)
+                                .then((value) {
+                              if (value.status) {
+                                vm.dispatch(
+                                    AuthAction(type: AuthActionType.logout));
+                                Navigator.of(context).popAndPushNamed('/auth');
+                              }
+                            });
                           }
                           return null;
                         });
@@ -461,6 +505,82 @@ class _Drawer extends ConsumerWidget {
             ]),
           );
         });
+  }
+}
+
+class DeleteAccountConfirmation extends StatefulWidget {
+  const DeleteAccountConfirmation({super.key});
+
+  @override
+  State<DeleteAccountConfirmation> createState() =>
+      _DeleteAccountConfirmationState();
+}
+
+class _DeleteAccountConfirmationState extends State<DeleteAccountConfirmation> {
+  String? password;
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+        color: Colors.transparent,
+        child: Center(
+            child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Container(
+            constraints: BoxConstraints(maxHeight: 250),
+            decoration: BoxDecoration(color: Color(0xE20E0E0E)),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                              color: Colors.white, shape: BoxShape.circle),
+                          child: Icon(Icons.close, color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Text('Enter your password to delete your account',
+                        style: GoogleFonts.poppins(fontSize: 14)),
+                    const SizedBox(height: 20),
+                    TextField(
+                      onChanged: (value) => password = value,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock_outline_rounded),
+                        labelStyle: GoogleFonts.quicksand(),
+                        hintText: 'Enter your password',
+                        hintStyle: GoogleFonts.quicksand(fontSize: 14),
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton.icon(
+                        onPressed: () {
+                          if (password != null) {
+                            Navigator.pop(context, password);
+                          }
+                        },
+                        style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStatePropertyAll(Colors.white)),
+                        icon: Icon(Icons.delete),
+                        label: Text(
+                          'Delete Account',
+                          style: GoogleFonts.poppins(),
+                        ))
+                  ]),
+            ),
+          ),
+        )));
   }
 }
 

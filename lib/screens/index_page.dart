@@ -82,6 +82,12 @@ class IndexPage extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   color: Color(0xFF2B2B2B),
                                   borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          blurRadius: 3,
+                                          offset: Offset(2, 4),
+                                          color: Color(0xB3000000))
+                                    ]
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -129,8 +135,8 @@ class IndexPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () =>
-                                Navigator.of(context).pushNamed('/test'),
+                            // onTap: () =>
+                            // Navigator.of(context).pushNamed('/test'),
                             child: Text(
                               'Available Templates',
                               style: GoogleFonts.poppins(

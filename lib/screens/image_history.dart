@@ -62,14 +62,7 @@ class _ImageHistoryState extends ConsumerState<ImageHistory> {
                                             onTap: () {
                                               Navigator.of(context).pushNamed(
                                                   '/image-result',
-                                                  arguments: (
-                                                    status: true,
-                                                    message: 'Image result',
-                                                    data: {
-                                                      'url':
-                                                          '$uploadsBaseUrl/${data[index].image}'
-                                                    }
-                                                  ));
+                                                  arguments: data[index]);
                                             },
                                             child: Container(
                                               width: MediaQuery.of(context)

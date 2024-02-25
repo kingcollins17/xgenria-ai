@@ -80,12 +80,13 @@ abstract class AuthAPI {
 
   ///
   static Future<({bool status, String message})> forgotPassword(
-      Dio dio, AccessToken token,
+      Dio dio,
+      //  AccessToken token,
       {email = 'kingcollins172@gmail.com'}) async {
     try {
       final response = await dio.get(
         Uri.https(cfg.domain, '/auth/forgot-password/$email').toString(),
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        // options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       return (
@@ -175,16 +176,53 @@ abstract class AuthAPI {
     }
   }
 
-  static Future<dynamic> deleteAccount(Dio dio, AccessToken token) async {
+  static Future<dynamic> confirmPasswordToken(Dio dio, AccessToken token,
+      {required String passwordToken}) async {
+    try {
+      final response = await dio.get(
+          Uri.https(cfg.domain, '/confirm-password-token/$passwordToken')
+              .toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      return response.data;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  static Future<dynamic> resetPassword(
+    Dio dio,
+    AccessToken token, {
+    required String passwordToken,
+    required String newPassword,
+    required String confirmation,
+  }) async {
+    try {
+      final response = await dio.post(Uri.https(cfg.domain).toString(),
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      return response.data;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  ///Delete account
+  static Future<({String message, bool status})> deleteAccount(
+      Dio dio, AccessToken token, String password) async {
     try {
       final response = await dio.delete(
           Uri.https(cfg.domain, '/delete-account').toString(),
+          data: {'password': password},
           options: Options(headers: {'Authorization': 'Bearer $token'}));
-      return response.data;
+      return (
+        status: response.statusCode == 200,
+        message: response.data['message'].toString()
+      );
     } on DioException catch (_) {
-      return cfg.connectErrorMessage;
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
-      return e;
+      return (status: false, message: e.runtimeType.toString());
     }
   }
 }

@@ -31,7 +31,12 @@ class _ProjectDetailState extends ConsumerState<ProjectDetail> {
           final docs = ref.watch(docNotifierProvider(vm.auth.token!));
 
           return Scaffold(
-              appBar: AppBar(),
+              appBar: AppBar(
+                title: Text(
+                  'Project : ${widget.project.name}',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+              ),
               body: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -98,10 +103,15 @@ class ProjectTranscriptions extends StatelessWidget {
     return Column(
       children: [
         Align(
-            alignment: Alignment.centerLeft, child: Text('AI Transcriptions')),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'AI Transcriptions',
+              style: GoogleFonts.poppins(
+                  fontSize: 16, fontWeight: FontWeight.w500),
+            )),
         const SizedBox(height: 15),
         ...List.generate(
-            data.length,
+            projectTrans.length,
             (index) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: GestureDetector(
@@ -130,7 +140,7 @@ class ProjectTranscriptions extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          data[index].name,
+                          projectTrans[index].name,
                           style: GoogleFonts.poppins(fontSize: 14),
                         )
                       ]),
@@ -194,7 +204,7 @@ class _ProjectDocumentsState extends State<ProjectDocuments> {
           ),
           const SizedBox(height: 10),
           ...List.generate(
-            widget.documents.length,
+            projectDocuments.length,
             (index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: GestureDetector(
@@ -227,7 +237,7 @@ class _ProjectDocumentsState extends State<ProjectDocuments> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        widget.documents[index].name,
+                        projectDocuments[index].name,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,

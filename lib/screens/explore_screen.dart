@@ -82,7 +82,8 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
                                           final value = templatesData.value!;
                                           return value.categories![index].name;
                                         }(),
-                                        style: TextStyle(fontSize: 14),
+                                        style:
+                                            GoogleFonts.quicksand(fontSize: 14),
                                       ),
                                       const SizedBox(width: 2),
                                       Text(

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_element
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive/hive.dart';
 import 'package:redux/redux.dart';
+import 'package:xgenria/api/api.dart';
 import 'package:xgenria/models/models.dart';
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/core.dart';
@@ -47,6 +48,14 @@ class _XAuthState extends ConsumerState<XAuth>
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _notify(String message, {bool? loading}) {
+    setState(() {
+      isLoading = loading ?? isLoading;
+      popUp = PopUp(animation: controller, message: message);
+    });
+    return showPopUp(controller);
   }
 
   @override
@@ -182,6 +191,10 @@ class _XAuthState extends ConsumerState<XAuth>
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: GestureDetector(
+                                      onTap: () =>
+                                          Navigator.of(context).pushNamed(
+                                        '/forgot-password',
+                                      ),
                                       child: Text(
                                         'Forgot Password?  ',
                                         style: GoogleFonts.urbanist(
@@ -359,10 +372,7 @@ class _XAuthState extends ConsumerState<XAuth>
   }
 }
 
-
-
 class _InputField extends StatelessWidget {
-  
   const _InputField({
     super.key,
     required this.hint,

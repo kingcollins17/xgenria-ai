@@ -12,6 +12,7 @@ import 'package:xgenria/providers/image_provider.dart';
 import 'package:xgenria/providers/providers.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/pop_up.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ImageResult extends ConsumerStatefulWidget {
   const ImageResult({super.key, required this.data});
@@ -93,7 +94,7 @@ class _ImageResultState extends ConsumerState<ImageResult>
                           child: TextButton(
                               onPressed: () => setState(() {}),
                               child: Text(
-                                'Reload',
+                                'Unable to load this image!',
                                 style: GoogleFonts.quicksand(
                                     fontSize: 16, color: Colors.white),
                               )),
@@ -108,7 +109,7 @@ class _ImageResultState extends ConsumerState<ImageResult>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GestureDetector(
-                            onTap: () => null,
+                            onTap: () => Share.share(widget.data.url),
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 10),
@@ -171,21 +172,24 @@ class _ImageResultState extends ConsumerState<ImageResult>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: LinearGradient(colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.secondary,
-                        ]),
-                      ),
-                      child: Text(
-                        isLoading ? 'Please wait ...' : 'Go back',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: LinearGradient(colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.secondary,
+                          ]),
+                        ),
+                        child: Text(
+                          isLoading ? 'Please wait ...' : 'Go back',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     )

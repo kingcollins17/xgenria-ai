@@ -17,6 +17,7 @@ import 'package:xgenria/providers/image_provider.dart';
 import 'package:xgenria/providers/project_provider.dart';
 
 import 'package:xgenria/providers/providers.dart';
+import 'package:xgenria/providers/trans_provider.dart';
 import 'package:xgenria/redux/actions/base.dart';
 import 'package:xgenria/redux/actions/data_actions.dart';
 import 'package:xgenria/redux/core.dart';
@@ -152,6 +153,17 @@ MaterialPageRoute _onGenerateRoute(RouteSettings routeSettings,
         page = ReadDocument(doc: routeSettings.arguments as Document);
       }
       break;
+    case '/change-password':
+      page = ChangePassword();
+      break;
+
+    case '/forgot-password':
+      page = ForgotPassword();
+      break;
+
+    case '/reset-password':
+      page = ResetPassword();
+      break;
     case '/test':
       page = TestAPI();
       break;
@@ -181,68 +193,86 @@ class _TestAPIState extends State<TestAPI> {
   dynamic data;
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<XgenriaState, _ViewModel>(
-      builder: (context, vm) => Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final dio = ref.watch(dioProvider);
-          final images = ref.watch(
-            imagesProvider(vm.auth.token!),
-          );
-          return SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 50),
-                    Text(file?.toString() ?? 'No file yet',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Color(0xFFCFCFCF),
-                          decoration: TextDecoration.none,
-                        )),
-                    Text(
-                        // (data['data'] as List<dynamic>)
-                        //     .map((e) => PlanData.fromJson(e))
-                        //     .toString(),
+    return Material(
+      child: StoreConnector<XgenriaState, _ViewModel>(
+        builder: (context, vm) => Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final dio = ref.watch(dioProvider);
+            final images = ref.watch(
+              imagesProvider(vm.auth.token!),
+            );
+
+            final trans = ref.watch(transNotifierProvider(vm.auth.token!));
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 50),
+                      Text(file?.toString() ?? 'No file yet',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Color(0xFFCFCFCF),
+                            decoration: TextDecoration.none,
+                          )),
+                      Text(
                         '$data',
-                        //ImageData.fromJson(data['data']).toString(),
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Color(0xFFCFCFCF),
-                          decoration: TextDecoration.none,
-                        )),
-                    Consumer(builder: (context, ref, child) {
-                      return Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          FilledButton(
-                            onPressed: () {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              AuthAPI.plan(dio, vm.auth.token!)
-                                  .then((value) => setState(() {
-                                        isLoading = false;
-                                        data = value;
-                                      }));
-                            },
-                            child: Text('Press me'),
-                          ),
-                        ],
-                      );
-                    }),
-                    if (isLoading || vm.data.isLoading)
-                      SpinKitPulse(
-                        color: Colors.purple,
-                        size: 50,
-                      )
-                  ]),
-            ),
-          );
-        },
+                        style: GoogleFonts.poppins(),
+                      ),
+                      Text(
+                          // (data['data'] as List<dynamic>)
+                          //     .map((e) => PlanData.fromJson(e))
+                          //     .toString(),
+                          // '$data',
+                          trans.when(
+                              data: (transData) => '$transData',
+                              error: (_, __) => 'error',
+                              loading: () => 'loading ...'),
+                          //ImageData.fromJson(data['data']).toString(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Color(0xFFCFCFCF),
+                            decoration: TextDecoration.none,
+                          )),
+                      Consumer(builder: (context, ref, child) {
+                        return Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            FilledButton(
+                              onPressed: () {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                //
+                                TranscriptionAPI.delete(dio, vm.auth.token!,
+                                        id: 11)
+                                    .then((value) => setState(() {
+                                          isLoading = false;
+                                          data = value;
+                                          value.status
+                                              ? ref.invalidate(
+                                                  transNotifierProvider)
+                                              : null;
+                                        }));
+                              },
+                              child: Text('Press me'),
+                            ),
+                          ],
+                        );
+                      }),
+                      if (isLoading || vm.data.isLoading)
+                        SpinKitPulse(
+                          color: Colors.purple,
+                          size: 50,
+                        )
+                    ]),
+              ),
+            );
+          },
+        ),
+        converter: (Store<XgenriaState> store) => _ViewModel(store),
       ),
-      converter: (Store<XgenriaState> store) => _ViewModel(store),
     );
   }
 }

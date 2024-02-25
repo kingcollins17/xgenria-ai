@@ -75,17 +75,22 @@ abstract class TranscriptionAPI {
     }
   }
 
-  static Future<dynamic> delete(Dio dio, AccessToken token,
+  static Future<({String message, bool status})> delete(
+      Dio dio, AccessToken token,
       {required int id}) async {
     try {
       final response = await dio.delete(
           Uri.https(cfg.domain, '/transcription/$id/delete').toString(),
           options: Options(headers: {'Authorization': 'Bearer $token'}));
-      return response.data;
+      return (
+        status: response.statusCode == 200,
+        message: response.data['message'].toString()
+      );
     } on DioException catch (_) {
-      return cfg.connectErrorMessage;
+
+      return (status: false, message: cfg.connectErrorMessage);
     } catch (e) {
-      return e;
+      return (status: false, message: e.runtimeType.toString());
     }
   }
 }

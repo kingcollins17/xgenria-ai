@@ -14,6 +14,7 @@ import 'package:xgenria/api/api.dart';
 import 'package:xgenria/models/models.dart';
 import 'package:xgenria/providers/project_provider.dart';
 import 'package:xgenria/providers/providers.dart';
+import 'package:xgenria/providers/trans_provider.dart';
 import 'package:xgenria/redux/core.dart';
 import 'package:xgenria/widgets/pop_up.dart';
 import '../widgets/widgets.dart';
@@ -145,7 +146,6 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
                                 color: Color(0xFFADADAD),
                               ),
                             ),
-                           
                             Icon(
                               Icons.upload_rounded,
                               size: 20,
@@ -172,6 +172,9 @@ class _CreateTranscriptionState extends ConsumerState<CreateTranscription>
                                     file: file!,
                                     projectId: project?.projectId)
                                 .then((value) {
+                              value.status
+                                  ? ref.invalidate(transNotifierProvider)
+                                  : null;
                               setState(() {
                                 notification = PopUp(
                                     animation: controller,
