@@ -18,6 +18,19 @@ Xgenria is a mobile application built with Flutter that leverages the power of A
 - **Redux**: Also used for state management, ensuring predictable state updates.
 - **Layer-First Folder Structure**: Adopted due to the small size of the app, promoting organized and maintainable code.
 
+## Screenshots 
+
+1.Onboard ![Image 1](https://drive.google.com/uc?id=1-_HhNTZPHdirnc1HVG2xj1mJPIyaRAll)
+
+2. Drawer ![Image 2](https://drive.google.com/uc?id=1-WHEOw4X0aIg0YGZeyrDOKiEBRFhiE19)
+
+3.Image generator ![Image 3](https://drive.google.com/uc?id=1-OZrg6Pzv3s8LzMeKVfKQT2xOkY82cRE)
+
+4.AI chat ![Image 4](https://drive.google.com/uc?id=1-IxSrr3qcW21kiRuUYcjYC5X7Uv2A0jp)
+
+5. ![Image 5](https://drive.google.com/uc?id=1-IjOra8sq6GbYOJ89yKNX1aqn8Rl-86y)
+
+
 
 ## Folder Structure
 
