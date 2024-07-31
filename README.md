@@ -26,9 +26,9 @@ Xgenria is a mobile application built with Flutter that leverages the power of A
 
 3.Image generator ![Image 3](https://drive.google.com/uc?id=1-OZrg6Pzv3s8LzMeKVfKQT2xOkY82cRE)
 
-4.AI chat ![Image 4](https://drive.google.com/uc?id=1-IxSrr3qcW21kiRuUYcjYC5X7Uv2A0jp)
+4.Image generator![Image 4](https://drive.google.com/uc?id=1-IxSrr3qcW21kiRuUYcjYC5X7Uv2A0jp)
 
-5. ![Image 5](https://drive.google.com/uc?id=1-IjOra8sq6GbYOJ89yKNX1aqn8Rl-86y)
+5.AI chat ![Image 5](https://drive.google.com/uc?id=1-IjOra8sq6GbYOJ89yKNX1aqn8Rl-86y)
 
 
 
